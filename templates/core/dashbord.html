@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<style>
+
+/* ============================================================
+   DASHBOARD HERO
+   ============================================================ */
+.dashboard-container {
+  height: 100%;
+  min-height: calc(100vh - var(--header-h) - 44px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.dashboard-title {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: 0.5px;
+  margin: 0 0 14px;
+}
+
+.dashboard-subtitle {
+  font-size: 15px;
+  color: var(--grey-400);
+  max-width: 480px;
+  margin: 0 0 32px;
+}
+
+@media (max-width: 480px) {
+  .dashboard-title { font-size: 26px; }
+  .dashboard-subtitle { font-size: 13.5px; }
+}
+</style>
+<div class="dashboard-container">
+
+    <h1 class="dashboard-title">
+        Welcome to Fly Men Clothing
+    </h1>
+
+    <p class="dashboard-subtitle">
+        Manage your business, inventory, sales, and reports from one place.
+    </p>
+
+    <a href="{% url 'company_profile' %}" class="btn" style="text-decoration: none;">
+        View Company
+    </a>
+
+</div>
+
+{% endblock %}

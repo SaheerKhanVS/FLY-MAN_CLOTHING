@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Company Profile Export</title>
+
+<style>
+
+@page{
+    size:A4;
+    margin:8mm;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    color:#000;
+    font-size:10px;
+    line-height:1.2;
+    margin:0;
+    padding:0;
+}
+
+.document{
+    width:100%;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.company-header{
+    text-align:center;
+    border-bottom:2px solid #000;
+    padding-bottom:6px;
+    margin-bottom:8px;
+}
+
+.company-logo{
+    width:50px;
+    height:50px;
+    object-fit:contain;
+    margin-bottom:4px;
+}
+
+.company-title{
+    font-size:18px;
+    font-weight:bold;
+    text-transform:uppercase;
+    margin-bottom:3px;
+}
+
+.company-address{
+    font-size:9px;
+    margin-bottom:3px;
+}
+
+.company-contact{
+    font-size:9px;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section{
+    margin-top:8px;
+}
+
+.section-title{
+    background:#f2f2f2;
+    border:1px solid #000;
+    padding:4px;
+    font-size:11px;
+    font-weight:bold;
+    text-transform:uppercase;
+}
+
+.info-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.info-table td{
+    border:1px solid #000;
+    padding:4px;
+    vertical-align:top;
+}
+
+.label{
+    width:18%;
+    font-weight:bold;
+    background:#fafafa;
+}
+
+.value{
+    width:32%;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer{
+    margin-top:10px;
+    border-top:1px solid #000;
+    padding-top:5px;
+    text-align:center;
+    font-size:9px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="document">
+
+    <!-- COMPANY HEADER -->
+
+    <div class="company-header">
+
+        {% if company.logo %}
+            <img src="{{ company.logo.url }}"
+                 alt="Logo"
+                 class="company-logo">
+        {% endif %}
+
+        <div class="company-title">
+            {{ company.company_name }}
+        </div>
+
+        <div class="company-address">
+            {{ company.address }},
+            {{ company.city }},
+            {{ company.state }},
+            {{ company.country }}
+            - {{ company.postal_code }}
+        </div>
+
+        <div class="company-contact">
+            Phone: {{ company.phone }}
+            |
+            Email: {{ company.email }}
+        </div>
+
+    </div>
+
+    <!-- COMPANY INFORMATION -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Company Information
+        </div>
+
+        <table class="info-table">
+
+            <tr>
+                <td class="label">Company</td>
+                <td class="value">{{ company.company_name }}</td>
+
+                <td class="label">Owner</td>
+                <td class="value">{{ company.owner_name }}</td>
+            </tr>
+
+            <tr>
+                <td class="label">Phone</td>
+                <td class="value">{{ company.phone }}</td>
+
+                <td class="label">Email</td>
+                <td class="value">{{ company.email }}</td>
+            </tr>
+
+            <tr>
+                <td class="label">City</td>
+                <td class="value">{{ company.city }}</td>
+
+                <td class="label">State</td>
+                <td class="value">{{ company.state }}</td>
+            </tr>
+
+            <tr>
+                <td class="label">Country</td>
+                <td class="value">{{ company.country }}</td>
+
+                <td class="label">Postal Code</td>
+                <td class="value">{{ company.postal_code }}</td>
+            </tr>
+
+            <tr>
+                <td class="label">GST Number</td>
+                <td class="value">{{ company.gst_number }}</td>
+
+                <td class="label">Created</td>
+                <td class="value">{{ company.created_at|date:"d-m-Y" }}</td>
+            </tr>
+
+            <tr>
+                <td class="label">Updated</td>
+                <td class="value">{{ company.updated_at|date:"d-m-Y" }}</td>
+
+                <td class="label">Address</td>
+                <td class="value">{{ company.address }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- SYSTEM SETTINGS -->
+
+    <div class="section">
+
+        <div class="section-title">
+            System Settings
+        </div>
+
+        <table class="info-table">
+
+            <tr>
+                <td class="label">Currency</td>
+                <td class="value">{{ settings.currency }}</td>
+
+                <td class="label">Commission</td>
+                <td class="value">{{ settings.default_commission }}%</td>
+            </tr>
+
+            <tr>
+                <td class="label">Financial Start</td>
+                <td class="value">
+                    {{ settings.financial_year_start }}
+                </td>
+
+                <td class="label">Financial End</td>
+                <td class="value">
+                    {{ settings.financial_year_end }}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label">Negative Balance</td>
+                <td class="value">
+                    {% if settings.allow_negative_balance %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+
+                <td class="label">Created</td>
+                <td class="value">
+                    {{ settings.created_at|date:"d-m-Y" }}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label">Updated</td>
+                <td class="value">
+                    {{ settings.updated_at|date:"d-m-Y" }}
+                </td>
+
+                <td class="label"></td>
+                <td class="value"></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        <strong>Generated By Fly Men Clothing ERP</strong>
+
+        <br>
+
+        Generated On :
+        {% now "d M Y H:i" %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

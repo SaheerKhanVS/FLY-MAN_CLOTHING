@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fly Men Clothing{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.jpg' %}">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar">
+
+    <div class="sidebar-menu">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'company_profile' %}">Company</a>
+        <a href="#">Sales</a>
+        <a href="#">Purchase</a>
+        <a href="#">Reports</a>
+        <a href="#">Settings</a>
+    </div>
+
+    <div class="sidebar-footer">
+        <small>v1.0.0</small>
+        <small>© Fly Men Clothing 2026</small>
+    </div>
+
+</div>
+
+<!-- Overlay -->
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<!-- Header -->
+<header class="header">
+
+    <button class="menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
+
+    <div class="logo-section">
+        <img src="{% static 'images/icon.png' %}" alt="Logo">
+        <span class="company-name">FLYMEN</span>
+    </div>
+
+    <div id="live-clock" class="clock">
+        <span class="clock-time"></span>
+        <span class="clock-date"></span>
+    </div>
+
+</header>
+
+<!-- Content -->
+<main class="main-content">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- Scripts -->
+<script>
+    function updateClock(){
+        const now = new Date();
+        document.querySelector("#live-clock .clock-time").innerHTML = now.toLocaleTimeString();
+        document.querySelector("#live-clock .clock-date").innerHTML = now.toLocaleDateString(undefined, {
+            weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
+        });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function toggleMenu(){
+        document.getElementById("sidebar").classList.toggle("active");
+        document.getElementById("overlay").classList.toggle("active");
+    }
+</script>
+
+</body>
+</html>

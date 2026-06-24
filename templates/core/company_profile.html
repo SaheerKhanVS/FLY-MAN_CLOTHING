@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}
+Company Profile
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .company-profile-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+    }
+
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--black);
+        padding-bottom: 14px;
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--black);
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .card h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--black);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        border-bottom: 1px solid var(--black);
+        padding-bottom: 10px;
+        margin: 0 0 16px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--black-200);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--black);
+    }
+
+    .info-value {
+        color: var(--black);
+        text-align: right;
+    }
+
+    .company-logo {
+        display: block;
+        margin: 0 auto 20px;
+        width: 110px;
+        height: 110px;
+        object-fit: cover;
+        border: 1px solid var(--black);
+        filter: grayscale(100%);
+    }
+
+    @media (max-width:768px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .info-value {
+            text-align: right;
+            font-size: 13px;
+        }
+    }
+
+    /* Printable view: strip chrome, keep content clean on paper */
+    @media print {
+
+        .header,
+        .sidebar,
+        .overlay,
+        .profile-actions {
+            display: none !important;
+        }
+
+        .main-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .company-profile-container {
+            max-width: 100%;
+        }
+
+        .card {
+            box-shadow: none;
+            border: 1px solid #000;
+            break-inside: avoid;
+        }
+
+        body {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="company-profile-container">
+
+    <div class="profile-header">
+        <h1 class="page-title">Company Profile</h1>
+
+        <div class="profile-actions">
+            <a href="#" class="btn" style="text-decoration: none;">Edit Company</a>
+            <a href="{% url 'company_export_pdf' %}" class="btn btn-outline" style="text-decoration:none;">Export PDF</a>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+
+        <!-- Company Details -->
+
+        <div class="panel card">
+
+            <h2>Company Information</h2>
+
+            {% if company.logo %}
+            <img src="{{ company.logo.url }}" alt="Company Logo" class="company-logo">
+            {% endif %}
+
+            <div class="info-row">
+                <span class="info-label">Company Name</span>
+                <span class="info-value">{{ company.company_name }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Owner Name</span>
+                <span class="info-value">{{ company.owner_name }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Phone</span>
+                <span class="info-value">{{ company.phone }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ company.email }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Address</span>
+                <span class="info-value">{{ company.address }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">City</span>
+                <span class="info-value">{{ company.city }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">State</span>
+                <span class="info-value">{{ company.state }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Country</span>
+                <span class="info-value">{{ company.country }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Postal Code</span>
+                <span class="info-value">{{ company.postal_code }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">GST Number</span>
+                <span class="info-value">{{ company.gst_number }}</span>
+            </div>
+
+        </div>
+
+        <!-- System Settings -->
+
+        <div class="panel card">
+
+            <h2>System Settings</h2>
+
+            <div class="info-row">
+                <span class="info-label">Currency</span>
+                <span class="info-value">{{ settings.currency }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Financial Year Start</span>
+                <span class="info-value">{{ settings.financial_year_start }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Financial Year End</span>
+                <span class="info-value">{{ settings.financial_year_end }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Allow Negative Balance</span>
+                <span class="info-value">
+                    {% if settings.allow_negative_balance %}
+                    Yes
+                    {% else %}
+                    No
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Default Commission</span>
+                <span class="info-value">
+                    {{ settings.default_commission }}%
+                </span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Created At</span>
+                <span class="info-value">{{ settings.created_at }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Updated At</span>
+                <span class="info-value">{{ settings.updated_at }}</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
