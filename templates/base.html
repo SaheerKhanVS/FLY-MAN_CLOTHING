@@ -1,79 +1,58 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="--primary:{{ primary_color_hex }};--secondary:{{ secondary_color_hex }};">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Fly Men Clothing{% endblock %}</title>
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.JPG' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Flymen Clothing{% endblock %}</title>
+  <link rel="icon" href="{% static 'images/favicon.JPG' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
 </head>
 <body>
-
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar">
-
-    <div class="sidebar-menu">
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'company_profile' %}">Company</a>
-        <a href="#">Sales</a>
-        <a href="#">Purchase</a>
-        <a href="#">Reports</a>
-        <a href="#">Settings</a>
-    </div>
-
-    <div class="sidebar-footer">
-        <small>v1.0.0</small>
-        <small>© Fly Men Clothing 2026</small>
-    </div>
-
-</div>
-
-<!-- Overlay -->
-<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
-
-<!-- Header -->
-<header class="header">
-
-    <button class="menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
-
-    <div class="logo-section">
-        <img src="{% static 'images/icon.PNG' %}" alt="Logo">
-        <span class="company-name">FLYMEN</span>
-    </div>
-
-    <div id="live-clock" class="clock">
-        <span class="clock-time"></span>
-        <span class="clock-date"></span>
-    </div>
-
-</header>
-
-<!-- Content -->
-<main class="main-content">
-    {% block content %}
-    {% endblock %}
-</main>
-
-<!-- Scripts -->
-<script>
-    function updateClock(){
-        const now = new Date();
-        document.querySelector("#live-clock .clock-time").innerHTML = now.toLocaleTimeString();
-        document.querySelector("#live-clock .clock-date").innerHTML = now.toLocaleDateString(undefined, {
-            weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
-        });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    function toggleMenu(){
-        document.getElementById("sidebar").classList.toggle("active");
-        document.getElementById("overlay").classList.toggle("active");
-    }
-</script>
-
+  <aside id="sidebar" class="app-sidebar">
+    <a class="brand" href="{% url 'dashboard' %}">
+      <span class="brand-mark">{% if system_settings.company.logo %}<img src="{{ system_settings.company.logo.url }}" alt="{{ system_settings.company.company_name }} logo">{% else %}<img src="{% static 'images/icon.PNG' %}" alt="Flymen logo">{% endif %}</span>
+      <span class="brand-name">Flymen</span>
+    </a>
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <p class="nav-label">Main menu</p>
+      <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}"><svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="{% url 'company_profile' %}" class="{% if request.resolver_match.url_name == 'company_profile' or request.resolver_match.url_name == 'edit_company' %}is-active{% endif %}"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 21h18M5 21V5l7-3 7 3v16M9 9h6M9 13h6M9 17h6"/></svg>Company</a>
+      <a href="#" aria-disabled="true"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 7h16M7 3v4M17 3v4M5 11h14v9H5z"/></svg>Sales</a>
+      <a href="#" aria-disabled="true"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 10h8"/></svg>Purchases</a>
+      <p class="nav-label">System</p>
+      <a href="{% url 'settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}is-active{% endif %}"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.06.06-2.12 2.12-.06-.06a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.1 1.65v.09h-3v-.09a1.8 1.8 0 0 0-1.1-1.65 1.8 1.8 0 0 0-2 .36l-.06.06-2.12-2.12.06-.06a1.8 1.8 0 0 0 .36-2 1.8 1.8 0 0 0-1.65-1.1H5v-3h.09A1.8 1.8 0 0 0 6.74 9.8a1.8 1.8 0 0 0-.36-2l-.06-.06 2.12-2.12.06.06a1.8 1.8 0 0 0 2 .36 1.8 1.8 0 0 0 1.1-1.65V4.3h3v.09a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 2-.36l.06-.06 2.12 2.12-.06.06a1.8 1.8 0 0 0-.36 2 1.8 1.8 0 0 0 1.65 1.1H19v3h-.09A1.8 1.8 0 0 0 17.3 15Z"/></svg>Settings</a>
+    </nav>
+    <div class="sidebar-bottom"><strong>{{ system_settings.company.company_name|default:"Flymen Clothing" }}</strong>Business workspace · v1.0</div>
+  </aside>
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+  <header class="app-header">
+    <button id="menu-trigger" class="menu-trigger" type="button" aria-label="Open menu">☰</button>
+    <div><div class="header-title">{% block header_title %}Workspace{% endblock %}</div><div class="header-meta">Business management made simple</div></div>
+    <div class="header-actions"><span class="clock" id="live-clock" aria-label="Current time"></span></div>
+  </header>
+  <main class="app-main">{% block content %}{% endblock %}</main>
+  <div id="toast-host" class="toast-host" aria-live="polite"></div>
+  <div id="app-modal" class="modal-overlay" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="app-modal-title"><div id="app-modal-icon" class="modal-icon">!</div><h2 id="app-modal-title" class="modal-title"></h2><p id="app-modal-message" class="modal-message"></p><div id="app-modal-actions" class="modal-actions"></div></div></div>
+  <script>
+    (function () {
+      function hexToRgb(hex) { const value = (hex || '').replace('#',''); const normalized = value.length === 3 ? value.split('').map(x => x + x).join('') : value; if (!/^[0-9a-f]{6}$/i.test(normalized)) return null; return normalized.match(/.{2}/g).map(x => parseInt(x, 16)).join(', '); }
+      const root = document.documentElement, style = getComputedStyle(root);
+      root.style.setProperty('--primary-rgb', hexToRgb(style.getPropertyValue('--primary').trim()) || '13, 114, 93');
+      root.style.setProperty('--secondary-rgb', hexToRgb(style.getPropertyValue('--secondary').trim()) || '49, 183, 122');
+      const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebar-overlay');
+      function toggleMenu() { sidebar.classList.toggle('is-open'); overlay.classList.toggle('is-open'); }
+      document.getElementById('menu-trigger').addEventListener('click', toggleMenu); overlay.addEventListener('click', toggleMenu);
+      const clock = document.getElementById('live-clock'); function clockTick() { const now = new Date(); clock.innerHTML = '<span class="clock-time">' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) + '</span>' + now.toLocaleDateString([], {day:'2-digit', month:'short', year:'numeric'}); } clockTick(); setInterval(clockTick, 1000);
+      window.showToast = function(message, isError) { const toast = document.createElement('div'); toast.className = 'toast' + (isError ? ' error' : ''); toast.textContent = message; document.getElementById('toast-host').appendChild(toast); setTimeout(() => toast.remove(), 3600); };
+      window.openAppModal = function(options) { const modal = document.getElementById('app-modal'), icon = document.getElementById('app-modal-icon'), actions = document.getElementById('app-modal-actions'); document.getElementById('app-modal-title').textContent = options.title || 'Please check this'; document.getElementById('app-modal-message').textContent = options.message || ''; icon.className = 'modal-icon ' + (options.tone || ''); icon.textContent = options.tone === 'danger' ? '×' : options.tone === 'warning' ? '!' : '✓'; actions.innerHTML = ''; const cancel = document.createElement('button'); cancel.className = 'btn btn-outline'; cancel.textContent = options.cancelText || 'Close'; cancel.onclick = () => modal.hidden = true; actions.appendChild(cancel); if (options.confirm) { const ok = document.createElement('button'); ok.className = 'btn ' + (options.tone === 'danger' ? 'btn-danger' : ''); ok.textContent = options.confirmText || 'Continue'; ok.onclick = () => { modal.hidden = true; options.confirm(); }; actions.appendChild(ok); } modal.hidden = false; };
+      document.querySelectorAll('[data-confirm]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openAppModal({title: el.dataset.confirmTitle || 'Are you sure?', message: el.dataset.confirm, tone: el.dataset.confirmTone || 'warning', confirmText: el.dataset.confirmAction || 'Continue', confirm: () => { window.location = el.href; }}); }));
+      {% if messages %}{% for message in messages %}showToast('{{ message|escapejs }}', {% if message.tags == 'error' %}true{% else %}false{% endif %});{% endfor %}{% endif %}
+      {% if form.errors %}window.addEventListener('load', () => openAppModal({title:'Some details need attention', message:'Please correct the highlighted fields and try again.', tone:'warning'}));{% endif %}
+    }());
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

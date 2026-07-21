@@ -1,60 +1,19 @@
 {% extends "base.html" %}
-
-{% block title %}
-Dashboard
-{% endblock %}
-
+{% block title %}Dashboard · Flymen{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
 {% block content %}
-<style>
-
-/* ============================================================
-   DASHBOARD HERO
-   ============================================================ */
-.dashboard-container {
-  height: 100%;
-  min-height: calc(100vh - var(--header-h) - 44px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-}
-
-.dashboard-title {
-  font-size: 38px;
-  font-weight: 700;
-  color: var(--black);
-  letter-spacing: 0.5px;
-  margin: 0 0 14px;
-}
-
-.dashboard-subtitle {
-  font-size: 15px;
-  color: var(--grey-400);
-  max-width: 480px;
-  margin: 0 0 32px;
-}
-
-@media (max-width: 480px) {
-  .dashboard-title { font-size: 26px; }
-  .dashboard-subtitle { font-size: 13.5px; }
-}
-</style>
-<div class="dashboard-container">
-
-    <h1 class="dashboard-title">
-        Welcome to Fly Men Clothing
-    </h1>
-
-    <p class="dashboard-subtitle">
-        Manage your business, inventory, sales, and reports from one place.
-    </p>
-
-    <a href="{% url 'company_profile' %}" class="btn" style="text-decoration: none;">
-        View Company
-    </a>
-
-</div>
-
+<section class="page">
+  <div class="page-head"><div><p class="eyebrow">Overview</p><h1>Good to see you.</h1><p>Here is a simple view of your Flymen Clothing workspace.</p></div><div class="page-actions"><a class="btn btn-outline" href="{% url 'company_profile' %}">Company profile</a><a class="btn" href="{% url 'settings' %}">Workspace settings</a></div></div>
+  <div class="metric-grid">
+    <article class="card metric-card"><span class="metric-label">Net income</span><div class="metric-value">₹0 <span class="metric-change">New</span></div><span class="metric-note">Start recording sales to track this.</span></article>
+    <article class="card metric-card"><span class="metric-label">Sales</span><div class="metric-value">₹0 <span class="metric-change">This month</span></div><span class="metric-note">No sales data yet.</span></article>
+    <article class="card metric-card"><span class="metric-label">Orders</span><div class="metric-value">0 <span class="metric-change">Open</span></div><span class="metric-note">Everything is up to date.</span></article>
+    <article class="card metric-card"><span class="metric-label">Workspace</span><div class="metric-value">Ready</div><span class="metric-note">Your company profile is configured.</span></article>
+  </div>
+  <div class="dashboard-grid">
+    <section class="card chart-panel"><div class="panel-head"><div><h2 class="panel-title">Sales activity</h2><p class="panel-subtitle">Monthly sales will appear here as you add records.</p></div><span class="btn btn-ghost btn-sm">This month</span></div><div class="chart-area"><svg viewBox="0 0 700 205" preserveAspectRatio="none" role="img" aria-label="Empty sales activity chart"><path d="M0 160 C70 145 92 175 160 142 S256 127 312 151 S395 121 457 136 S548 155 606 112 S662 95 700 107 L700 205 L0 205Z" fill="rgba(var(--secondary-rgb), .10)"/><path d="M0 160 C70 145 92 175 160 142 S256 127 312 151 S395 121 457 136 S548 155 606 112 S662 95 700 107" fill="none" stroke="var(--secondary)" stroke-width="2.2"/><path d="M0 40H700M0 100H700M0 160H700" stroke="#e7eeeb" stroke-dasharray="4 5"/></svg></div></section>
+    <section class="card"><div class="panel-head"><div><h2 class="panel-title">Order funnel</h2><p class="panel-subtitle">Track your selling flow.</p></div></div><div class="summary-list"><div class="summary-row"><span>Product views<small>Visitor interest</small></span><strong>0</strong></div><div class="summary-row"><span>Add to cart<small>Potential orders</small></span><strong>0</strong></div><div class="summary-row"><span>Checkout started<small>Pending payment</small></span><strong>0</strong></div><div class="summary-row"><span>Completed sales<small>Finished orders</small></span><strong>0</strong></div></div></section>
+  </div>
+  <div class="lower-grid"><section class="card"><div class="panel-head"><div><h2 class="panel-title">Quick start</h2><p class="panel-subtitle">Finish setting up your workspace.</p></div></div><a class="quick-link" href="{% url 'company_profile' %}">Review company details <span>→</span></a><a class="quick-link" href="{% url 'settings' %}">Choose workspace colors <span>→</span></a></section><section class="card"><div class="panel-head"><div><h2 class="panel-title">Your workspace</h2><p class="panel-subtitle">The primary and secondary colors selected in settings are applied throughout this interface.</p></div></div><p style="margin:0;color:var(--muted);">Use the Company area to keep your business details current. All controls, cards, alerts, and dialogs share this responsive design system.</p></section></div>
+</section>
 {% endblock %}
