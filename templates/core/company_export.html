@@ -2,286 +2,295 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Company Profile Export</title>
+<title>{{ company.company_name }} - Official Company Profile</title>
 
 <style>
-
-@page{
-    size:A4;
-    margin:8mm;
+@page {
+    size: A4;
+    margin: 12mm 14mm 14mm 14mm;
 }
 
-body{
-    font-family:Arial,sans-serif;
-    color:#000;
-    font-size:10px;
-    line-height:1.2;
-    margin:0;
-    padding:0;
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #1a2925;
+    font-size: 11px;
+    line-height: 1.45;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
 }
 
-.document{
-    width:100%;
+.document {
+    width: 100%;
 }
 
 /* =========================
    HEADER
 ========================= */
-
-.company-header{
-    text-align:center;
-    border-bottom:2px solid #000;
-    padding-bottom:6px;
-    margin-bottom:8px;
+.header-table {
+    width: 100%;
+    border-bottom: 2.5px solid #0d725d;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
 }
 
-.company-logo{
-    width:50px;
-    height:50px;
-    object-fit:contain;
-    margin-bottom:4px;
+.brand-cell {
+    vertical-align: middle;
 }
 
-.company-title{
-    font-size:18px;
-    font-weight:bold;
-    text-transform:uppercase;
-    margin-bottom:3px;
+.brand-logo {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
-.company-address{
-    font-size:9px;
-    margin-bottom:3px;
+.title-cell {
+    vertical-align: middle;
+    text-align: right;
 }
 
-.company-contact{
-    font-size:9px;
+.doc-tag {
+    font-size: 9px;
+    font-weight: bold;
+    color: #31b77a;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.doc-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0b483d;
+    margin: 2px 0;
+    text-transform: uppercase;
+}
+
+.doc-sub {
+    font-size: 10px;
+    color: #5d706a;
 }
 
 /* =========================
-   SECTION
+   CARDS & SECTIONS
 ========================= */
-
-.section{
-    margin-top:8px;
+.section {
+    margin-bottom: 16px;
 }
 
-.section-title{
-    background:#f2f2f2;
-    border:1px solid #000;
-    padding:4px;
-    font-size:11px;
-    font-weight:bold;
-    text-transform:uppercase;
+.section-head {
+    background: #0b483d;
+    color: #ffffff;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 4px 4px 0 0;
 }
 
-.info-table{
-    width:100%;
-    border-collapse:collapse;
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #d8e5e0;
+    border-top: none;
 }
 
-.info-table td{
-    border:1px solid #000;
-    padding:4px;
-    vertical-align:top;
+.info-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #e7eeeb;
+    border-right: 1px solid #e7eeeb;
+    vertical-align: top;
 }
 
-.label{
-    width:18%;
-    font-weight:bold;
-    background:#fafafa;
+.info-table td:last-child {
+    border-right: none;
 }
 
-.value{
-    width:32%;
+.info-table tr:last-child td {
+    border-bottom: none;
+}
+
+.lbl {
+    width: 20%;
+    font-weight: bold;
+    color: #3c4f49;
+    background: #f6faf8;
+}
+
+.val {
+    width: 30%;
+    color: #111e1b;
+    font-weight: 500;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.badge-success {
+    background: #e3f7ed;
+    color: #0d6e43;
+    border: 1px solid #b8ebcf;
+}
+
+.badge-info {
+    background: #e8f1fd;
+    color: #1a56b0;
+    border: 1px solid #c7ddfb;
+}
+
+.badge-warning {
+    background: #fef4e5;
+    color: #8a550d;
+    border: 1px solid #fbe3c1;
 }
 
 /* =========================
    FOOTER
 ========================= */
-
-.footer{
-    margin-top:10px;
-    border-top:1px solid #000;
-    padding-top:5px;
-    text-align:center;
-    font-size:9px;
+.footer {
+    margin-top: 24px;
+    border-top: 1px solid #d8e5e0;
+    padding-top: 10px;
+    width: 100%;
 }
 
-</style>
+.footer-table {
+    width: 100%;
+    font-size: 9px;
+    color: #6e807a;
+}
 
+.footer-left {
+    text-align: left;
+}
+
+.footer-right {
+    text-align: right;
+}
+</style>
 </head>
 
 <body>
-
 <div class="document">
 
-    <!-- COMPANY HEADER -->
+    <!-- HEADER -->
+    <table class="header-table">
+        <tr>
+            <td class="brand-cell">
+                {% if company.logo %}
+                    <img src="{{ company.logo.url }}" alt="Logo" class="brand-logo">
+                {% else %}
+                    <div style="font-size: 22px; font-weight: 800; color: #0b483d;">{{ company.company_name }}</div>
+                {% endif %}
+            </td>
+            <td class="title-cell">
+                <div class="doc-tag">Flymen ERP Executive Report</div>
+                <div class="doc-title">{{ company.company_name }}</div>
+                <div class="doc-sub">Official Company Identity & Financial Configuration</div>
+            </td>
+        </tr>
+    </table>
 
-    <div class="company-header">
-
-        {% if company.logo %}
-            <img src="{{ company.logo.url }}"
-                 alt="Logo"
-                 class="company-logo">
-        {% endif %}
-
-        <div class="company-title">
-            {{ company.company_name }}
-        </div>
-
-        <div class="company-address">
-            {{ company.address }},
-            {{ company.city }},
-            {{ company.state }},
-            {{ company.country }}
-            - {{ company.postal_code }}
-        </div>
-
-        <div class="company-contact">
-            Phone: {{ company.phone }}
-            |
-            Email: {{ company.email }}
-        </div>
-
-    </div>
-
-    <!-- COMPANY INFORMATION -->
-
+    <!-- COMPANY & OWNER DETAILS -->
     <div class="section">
-
-        <div class="section-title">
-            Company Information
-        </div>
-
+        <div class="section-head">1. Business Identity & Owner Credentials</div>
         <table class="info-table">
-
             <tr>
-                <td class="label">Company</td>
-                <td class="value">{{ company.company_name }}</td>
-
-                <td class="label">Owner</td>
-                <td class="value">{{ company.owner_name }}</td>
+                <td class="lbl">Company Name</td>
+                <td class="val"><strong>{{ company.company_name }}</strong></td>
+                <td class="lbl">Assigned Owner</td>
+                <td class="val">
+                    {% if company.owner %}
+                        <strong>{{ company.owner.full_name }}</strong> (@{{ company.owner.username }})
+                    {% else %}
+                        Unassigned
+                    {% endif %}
+                </td>
             </tr>
-
             <tr>
-                <td class="label">Phone</td>
-                <td class="value">{{ company.phone }}</td>
-
-                <td class="label">Email</td>
-                <td class="value">{{ company.email }}</td>
+                <td class="lbl">Company Phone</td>
+                <td class="val">{{ company.phone }}</td>
+                <td class="lbl">Owner Contact</td>
+                <td class="val">{{ company.owner.phone|default:"—" }}</td>
             </tr>
-
             <tr>
-                <td class="label">City</td>
-                <td class="value">{{ company.city }}</td>
-
-                <td class="label">State</td>
-                <td class="value">{{ company.state }}</td>
+                <td class="lbl">Company Email</td>
+                <td class="val">{{ company.email }}</td>
+                <td class="lbl">Owner Email</td>
+                <td class="val">{{ company.owner.email|default:"—" }}</td>
             </tr>
-
             <tr>
-                <td class="label">Country</td>
-                <td class="value">{{ company.country }}</td>
-
-                <td class="label">Postal Code</td>
-                <td class="value">{{ company.postal_code }}</td>
+                <td class="lbl">Address</td>
+                <td class="val" colspan="3">{{ company.address }}, {{ company.city }}, {{ company.state }} {{ company.postal_code }}, {{ company.country }}</td>
             </tr>
-
             <tr>
-                <td class="label">GST Number</td>
-                <td class="value">{{ company.gst_number }}</td>
-
-                <td class="label">Created</td>
-                <td class="value">{{ company.created_at|date:"d-m-Y" }}</td>
+                <td class="lbl">GST Identification</td>
+                <td class="val">
+                    {% if company.gst_number %}
+                        <span class="badge badge-success">{{ company.gst_number }}</span>
+                    {% else %}
+                        Not provided
+                    {% endif %}
+                </td>
+                <td class="lbl">Registration Date</td>
+                <td class="val">{{ company.created_at|date:"d M Y" }}</td>
             </tr>
-
-            <tr>
-                <td class="label">Updated</td>
-                <td class="value">{{ company.updated_at|date:"d-m-Y" }}</td>
-
-                <td class="label">Address</td>
-                <td class="value">{{ company.address }}</td>
-            </tr>
-
         </table>
-
     </div>
 
     <!-- SYSTEM SETTINGS -->
-
     <div class="section">
-
-        <div class="section-title">
-            System Settings
-        </div>
-
+        <div class="section-head">2. Financial Defaults & System Parameters</div>
         <table class="info-table">
-
             <tr>
-                <td class="label">Currency</td>
-                <td class="value">{{ settings.currency }}</td>
-
-                <td class="label">Commission</td>
-                <td class="value">{{ settings.default_commission }}%</td>
+                <td class="lbl">Operating Currency</td>
+                <td class="val"><span class="badge badge-info">{{ settings.currency }}</span></td>
+                <td class="lbl">Default Staff Commission</td>
+                <td class="val"><strong>{{ settings.default_commission }}%</strong></td>
             </tr>
-
             <tr>
-                <td class="label">Financial Start</td>
-                <td class="value">
-                    {{ settings.financial_year_start }}
-                </td>
-
-                <td class="label">Financial End</td>
-                <td class="value">
-                    {{ settings.financial_year_end }}
-                </td>
+                <td class="lbl">Financial Year Start</td>
+                <td class="val">{{ settings.financial_year_start|date:"d M Y" }}</td>
+                <td class="lbl">Financial Year End</td>
+                <td class="val">{{ settings.financial_year_end|date:"d M Y" }}</td>
             </tr>
-
             <tr>
-                <td class="label">Negative Balance</td>
-                <td class="value">
+                <td class="lbl">Negative Balance Policy</td>
+                <td class="val">
                     {% if settings.allow_negative_balance %}
-                        Yes
+                        <span class="badge badge-warning">Allowed</span>
                     {% else %}
-                        No
+                        <span class="badge badge-success">Restricted</span>
                     {% endif %}
                 </td>
-
-                <td class="label">Created</td>
-                <td class="value">
-                    {{ settings.created_at|date:"d-m-Y" }}
-                </td>
+                <td class="lbl">Last Updated</td>
+                <td class="val">{{ settings.updated_at|date:"d M Y, H:i" }}</td>
             </tr>
-
-            <tr>
-                <td class="label">Updated</td>
-                <td class="value">
-                    {{ settings.updated_at|date:"d-m-Y" }}
-                </td>
-
-                <td class="label"></td>
-                <td class="value"></td>
-            </tr>
-
         </table>
-
     </div>
 
     <!-- FOOTER -->
-
     <div class="footer">
-
-        <strong>Generated By Fly Men Clothing ERP</strong>
-
-        <br>
-
-        Generated On :
-        {% now "d M Y H:i" %}
-
+        <table class="footer-table">
+            <tr>
+                <td class="footer-left">
+                    <strong>Generated by Flymen Clothing ERP System</strong><br>
+                    Confidential business document for internal & official auditing purposes.
+                </td>
+                <td class="footer-right">
+                    Generated On: {% now "d M Y, H:i" %} UTC<br>
+                    Page 1 of 1
+                </td>
+            </tr>
+        </table>
     </div>
 
 </div>
-
 </body>
 </html>

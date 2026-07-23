@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Staff Management · Flymen{% endblock %}
+{% block header_title %}Staff Management{% endblock %}
+
+{% block content %}
+<section class="page">
+
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Team & Accounts</p>
+            <h1>Staff Management</h1>
+            <p>View, create, search, and manage staff accounts and permissions.</p>
+        </div>
+
+        <div class="page-actions">
+            <a class="btn btn-outline" href="{% url 'staff_export' %}">
+                <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+            </a>
+
+            <a class="btn" href="{% url 'staff_create' %}">
+                <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create Staff Member
+            </a>
+        </div>
+    </div>
+
+    <section class="card">
+
+        <form class="staff-search" method="get">
+            <input
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search by name, username, phone, or staff code...">
+
+            <button class="btn btn-outline" type="submit">
+                Search
+            </button>
+        </form>
+
+        <div class="staff-grid">
+
+            {% for profile_obj in page_obj %}
+
+            <div class="staff-card">
+
+                <div class="staff-card-top">
+
+                    {% if profile_obj.profile_photo %}
+                        <img src="{{ profile_obj.profile_photo.url }}" alt="{{ profile_obj.user.full_name }}">
+                    {% else %}
+                        <img src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default profile photo">
+                    {% endif %}
+
+                    <div>
+                        <h3>{{ profile_obj.user.full_name }}</h3>
+                        <p>@{{ profile_obj.user.username }}</p>
+                    </div>
+
+                </div>
+
+                <div class="staff-info">
+
+                    <div>
+                        <small>Staff Code</small>
+                        <strong>{{ profile_obj.staff_code }}</strong>
+                    </div>
+
+                    <div>
+                        <small>Phone</small>
+                        <strong>{{ profile_obj.user.phone|default:"—" }}</strong>
+                    </div>
+
+                    <div>
+                        <small>Joined</small>
+                        <strong>{{ profile_obj.joining_date|date:"d M Y" }}</strong>
+                    </div>
+
+                    <div>
+                        <small>Account Status</small>
+
+                        {% if profile_obj.user.is_active %}
+                            <span class="badge badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inactive</span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <a href="{% url 'staff_profile' profile_obj.pk %}" class="btn btn-outline btn-block">
+                    View Full Profile
+                </a>
+
+            </div>
+
+            {% empty %}
+
+            <div class="empty-card">
+                <p style="margin: 0 0 8px; font-weight: 700; font-size: 16px; color: var(--ink);">No staff members found</p>
+                <p style="margin: 0; font-size: 13px;">Try adjusting your search keywords or add a new staff member.</p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+
+        <nav class="pagination">
+
+            {% if page_obj.has_previous %}
+                <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">
+                    ← Previous
+                </a>
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">
+                    Next →
+                </a>
+            {% endif %}
+
+        </nav>
+
+        {% endif %}
+
+    </section>
+
+</section>
+{% endblock %}

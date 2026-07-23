@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Export · Flymen{% endblock %}
+{% block header_title %}Export Staff Data{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 680px;">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Data Export</p>
+      <h1>Export Staff Records</h1>
+      <p>Download your complete staff database in CSV spreadsheet format.</p>
+    </div>
+  </div>
+
+  <div class="card" style="text-align: center; padding: 40px 24px;">
+    <div class="modal-icon" style="margin: 0 auto 16px;">
+      <svg style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </div>
+    <h3 style="margin: 0 0 8px; font-size: 18px;">Download CSV File</h3>
+    <p style="max-width: 480px; margin: 0 auto 24px; color: var(--muted); font-size: 14px;">
+      The CSV file contains staff codes, full names, usernames, contact phones, emails, joining dates, salary details, and active account status.
+    </p>
+
+    <div class="form-actions" style="justify-content: center; border-top: 0; padding-top: 0;">
+      <a class="btn btn-outline" href="{% url 'staff_list' %}">Back to Staff List</a>
+      <a class="btn" href="?download=true">Download CSV Export</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

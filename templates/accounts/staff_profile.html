@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Staff Profile · {{ profile_obj.user.full_name }}{% endblock %}
+{% block header_title %}Staff Details{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 960px;">
+  
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Staff Account</p>
+      <h1>{{ profile_obj.user.full_name }}</h1>
+      <p>{{ profile_obj.staff_code }} · @{{ profile_obj.user.username }}</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-outline" href="{% url 'staff_edit' profile_obj.pk %}">
+        <svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit Staff
+      </a>
+      <a class="btn btn-danger" href="{% url 'staff_delete' profile_obj.pk %}">
+        Delete Staff
+      </a>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="profile-summary">
+      {% if profile_obj.profile_photo %}
+        <img class="profile-avatar" src="{{ profile_obj.profile_photo.url }}" alt="{{ profile_obj.user.full_name }}">
+      {% else %}
+        <img class="profile-avatar" src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default profile">
+      {% endif %}
+      <div>
+        <h2 class="panel-title">{{ profile_obj.user.full_name }}</h2>
+        <p class="panel-subtitle">
+          {% if profile_obj.user.is_active %}
+            <span class="badge badge-success">Active Account</span>
+          {% else %}
+            <span class="badge badge-danger">Inactive Account</span>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="profile-detail-grid">
+      <div>
+        <small>Phone Number</small>
+        <strong>{{ profile_obj.user.phone|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Email Address</small>
+        <strong>{{ profile_obj.user.email|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Joining Date</small>
+        <strong>{{ profile_obj.joining_date|date:"d M Y" }}</strong>
+      </div>
+      <div>
+        <small>Monthly Salary</small>
+        <strong>₹{{ profile_obj.salary }}</strong>
+      </div>
+      <div>
+        <small>Commission System</small>
+        <strong>
+          {% if profile_obj.commission_enabled %}
+            <span class="badge badge-success">Enabled</span>
+          {% else %}
+            <span class="badge badge-neutral">Disabled</span>
+          {% endif %}
+        </strong>
+      </div>
+      <div>
+        <small>Last Login Session</small>
+        <strong>{{ profile_obj.user.last_login|date:"d M Y, H:i"|default:"Never logged in" }}</strong>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      {% if profile_obj.user.is_active %}
+        <form method="post" action="{% url 'staff_deactivate' profile_obj.pk %}">
+          {% csrf_token %}
+          <button class="btn btn-outline" type="submit">Deactivate Account</button>
+        </form>
+      {% else %}
+        <form method="post" action="{% url 'staff_activate' profile_obj.pk %}">
+          {% csrf_token %}
+          <button class="btn" type="submit">Activate Account</button>
+        </form>
+      {% endif %}
+    </div>
+  </section>
+
+</section>
+{% endblock %}

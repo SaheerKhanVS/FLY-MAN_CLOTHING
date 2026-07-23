@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in · Flymen</title>
+  <link rel="icon" href="{% static 'images/favicon.JPG' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark">
+        <img src="{% static 'images/icon.PNG' %}" alt="Flymen logo">
+      </span>
+      <div>
+        <span class="brand-name">Flymen</span>
+        <span class="brand-tag">ERP Workspace</span>
+      </div>
+    </div>
+    
+    <p class="eyebrow">Secure Portal</p>
+    <h1>Welcome back</h1>
+    <p class="auth-intro">Sign in to manage your Flymen Clothing business operations.</p>
+    
+    <form method="post">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+        <ul class="errorlist">
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.password.id_for_label }}">Password</label>
+        {{ form.password }}
+        {{ form.password.errors }}
+      </div>
+      
+      <button class="btn btn-block" type="submit">
+        Sign in to Workspace
+      </button>
+    </form>
+  </main>
+</body>
+</html>

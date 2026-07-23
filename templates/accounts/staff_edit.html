@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Staff · {{ profile_obj.user.full_name }}{% endblock %}
+{% block header_title %}Edit Staff Member{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 980px;">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Team & Accounts</p>
+      <h1>Edit Staff Member: {{ profile_obj.user.full_name }}</h1>
+      <p>Update personal information, contact details, salary, and active state.</p>
+    </div>
+  </div>
+
+  <form class="card" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Username</label>
+        <input value="{{ profile_obj.user.username }}" disabled style="background: var(--canvas); cursor: not-allowed;">
+      </div>
+
+      <div class="form-group">
+        <label>Staff Code</label>
+        <input value="{{ profile_obj.staff_code }}" disabled style="background: var(--canvas); cursor: not-allowed;">
+      </div>
+
+      <div class="form-group">
+        <label>First Name *</label>
+        {{ user_form.first_name }}
+        {{ user_form.first_name.errors }}
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        {{ user_form.last_name }}
+        {{ user_form.last_name.errors }}
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number *</label>
+        {{ user_form.phone }}
+        {{ user_form.phone.errors }}
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        {{ user_form.email }}
+        {{ user_form.email.errors }}
+      </div>
+
+      <div class="form-group">
+        <label>Joining Date</label>
+        {{ details_form.joining_date }}
+        {{ details_form.joining_date.errors }}
+      </div>
+
+      <div class="form-group">
+        <label>Monthly Salary (₹)</label>
+        {{ details_form.salary }}
+        {{ details_form.salary.errors }}
+      </div>
+
+      <div class="form-group" style="display:flex; align-items:center; min-height:44px; margin-top:auto;">
+        <label class="checkbox-row">
+          {{ details_form.commission_enabled }}
+          Commission Enabled
+        </label>
+      </div>
+
+      <div class="form-group" style="display:flex; align-items:center; min-height:44px; margin-top:auto;">
+        <label class="checkbox-row">
+          {{ user_form.is_active }}
+          Active Account Status
+        </label>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Profile Photo</label>
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+          <img id="staff-edit-photo-preview" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,.08); flex:0 0 auto;"
+               {% if profile_obj.profile_photo %}
+                   src="{{ profile_obj.profile_photo.url }}"
+               {% else %}
+                   src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'"
+               {% endif %}
+               alt="{{ profile_obj.user.full_name }} photo preview">
+          <div>
+            <strong style="display:block; font-size:13px;">Photo Preview</strong>
+            <small style="color:var(--muted); font-size:11px;">Current photo shown. Selecting a new picture previews it live before saving.</small>
+          </div>
+        </div>
+        {{ details_form.profile_photo }}
+        {{ details_form.profile_photo.errors }}
+      </div>
+
+      <div class="form-group field-full">
+        <label>Notes & Remarks</label>
+        {{ details_form.notes }}
+        {{ details_form.notes.errors }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="btn btn-outline" href="{% url 'staff_profile' profile_obj.pk %}">Cancel</a>
+      <button class="btn" type="submit">Save Changes</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const photoInput = document.getElementById("{{ details_form.profile_photo.id_for_label }}") || document.querySelector('input[type="file"][name*="profile_photo"]');
+  if (photoInput) {
+    photoInput.addEventListener("change", function () {
+      const file = this.files[0];
+      const preview = document.getElementById("staff-edit-photo-preview");
+      if (file && preview) {
+        preview.src = URL.createObjectURL(file);
+      }
+    });
+  }
+</script>
+{% endblock %}

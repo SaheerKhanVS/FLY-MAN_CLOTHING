@@ -1,14 +1,22 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Color, Company,SystemSettings
+from django.forms import Select
+from accounts.models import User
+from .models import Color, Company, SystemSettings
 
 
 class CompanyForm(forms.ModelForm):
+    owner = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        empty_label="Select Owner Account",
+    )
+
     class Meta:
         model = Company
         fields = [
             "company_name",
-            "owner_name",
+            "owner",
             "phone",
             "email",
             "address",
@@ -20,17 +28,19 @@ class CompanyForm(forms.ModelForm):
             "logo",
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        owners = User.objects.filter(user_type=User.UserType.OWNER)
+        if owners.exists():
+            self.fields["owner"].queryset = owners
+        else:
+            self.fields["owner"].queryset = User.objects.all()
+
     def clean_company_name(self):
         company_name = self.cleaned_data.get("company_name")
         if len(company_name.strip()) < 3:
             raise ValidationError("Company name must be at least 3 characters.")
         return company_name
-
-    def clean_owner_name(self):
-        owner_name = self.cleaned_data.get("owner_name")
-        if len(owner_name.strip()) < 3:
-            raise ValidationError("Owner name must be at least 3 characters.")
-        return owner_name
 
     def clean_phone(self):
         phone = self.cleaned_data.get("phone")
@@ -59,13 +69,16 @@ class CompanyForm(forms.ModelForm):
 
     def clean_logo(self):
         logo = self.cleaned_data.get("logo")
-        if not logo:return logo
+        if not logo:
+            return logo
         if hasattr(logo, "content_type"):
-            allowed_types = ["image/jpeg","image/png","image/webp",]
-            if logo.content_type not in allowed_types:raise forms.ValidationError("Only JPG, PNG and WEBP files are allowed.")
-            if logo.size > 2 * 1024 * 1024:raise forms.ValidationError("Image size must be less than 2MB.")
+            allowed_types = ["image/jpeg", "image/png", "image/webp"]
+            if logo.content_type not in allowed_types:
+                raise forms.ValidationError("Only JPG, PNG and WEBP files are allowed.")
+            if logo.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Image size must be less than 2MB.")
         return logo
-    
+
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
@@ -74,22 +87,10 @@ class CompanyForm(forms.ModelForm):
         return cleaned_data
 
 
-
-from django.forms import Select
-from .models import Color
-
-
 class AjaxColorSelect(Select):
     """
     A Select widget that never dumps the whole Color table into the page.
-
-    Instead of building hundreds of <option> tags (and running a query
-    per option) on every request, it renders only a blank option plus the
-    currently selected color, if any. The rest of the colors are fetched
-    on demand by Tom Select via the color_search_api endpoint as the user
-    types - see the "color-select" JS in systemsettings.html.
     """
-
     def __init__(self, attrs=None):
         base_attrs = {"class": "color-select"}
         if attrs:
@@ -124,8 +125,19 @@ class AjaxColorSelect(Select):
 class SystemSettingsForm(forms.ModelForm):
     class Meta:
         model = SystemSettings
-        fields = ["currency", "financial_year_start", "financial_year_end", "allow_negative_balance","default_commission", "primary_color", "secondary_color", ]
-        widgets = {"financial_year_start": forms.DateInput(attrs={"type": "date"}),"financial_year_end": forms.DateInput(attrs={"type": "date"}),}
+        fields = [
+            "currency",
+            "financial_year_start",
+            "financial_year_end",
+            "allow_negative_balance",
+            "default_commission",
+            "primary_color",
+            "secondary_color",
+        ]
+        widgets = {
+            "financial_year_start": forms.DateInput(attrs={"type": "date"}),
+            "financial_year_end": forms.DateInput(attrs={"type": "date"}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -8,9 +8,9 @@
 <section class="page settings-container">
     <div class="page-head">
         <div>
-            <p class="eyebrow">Workspace</p>
-            <h1>System settings</h1>
-            <p>Configure your financial defaults and the primary and secondary colors used throughout the app.</p>
+            <p class="eyebrow">Workspace Configuration</p>
+            <h1>System Settings</h1>
+            <p>Configure financial parameters, default commissions, and theme colors used throughout Flymen ERP.</p>
         </div>
     </div>
 
@@ -25,30 +25,30 @@
         <form method="POST" id="settings-form">
             {% csrf_token %}
 
-            <div class="settings-section-title">General</div>
+            <div class="settings-section-title">General Preferences</div>
             <div class="settings-grid">
                 <div class="field-full">
-                    <label for="{{ form.currency.id_for_label }}">Currency</label>
+                    <label for="{{ form.currency.id_for_label }}">Default Currency</label>
                     {{ form.currency }}
                     {{ form.currency.errors }}
                 </div>
 
                 <div>
-                    <label for="{{ form.default_commission.id_for_label }}">Default Commission (%)</label>
+                    <label for="{{ form.default_commission.id_for_label }}">Default Staff Commission (%)</label>
                     {{ form.default_commission }}
                     {{ form.default_commission.errors }}
                 </div>
 
-                <div style="display:flex; align-items:flex-end;">
-                    <label class="checkbox-row" style="margin-bottom:11px;">
+                <div style="display:flex; align-items:center; min-height: 44px; margin-top: auto;">
+                    <label class="checkbox-row">
                         {{ form.allow_negative_balance }}
-                        Allow negative balance
+                        Allow negative cash/bank balance
                     </label>
                     {{ form.allow_negative_balance.errors }}
                 </div>
             </div>
 
-            <div class="settings-section-title">Financial Year</div>
+            <div class="settings-section-title">Financial Year Period</div>
             <div class="settings-grid">
                 <div>
                     <label for="{{ form.financial_year_start.id_for_label }}">Start Date</label>
@@ -63,10 +63,10 @@
                 </div>
             </div>
 
-            <div class="settings-section-title">Theme Colors</div>
+            <div class="settings-section-title">Theme Palette</div>
             <div class="settings-grid">
                 <div class="field-full">
-                    <label for="{{ form.primary_color.id_for_label }}">Primary Color</label>
+                    <label for="{{ form.primary_color.id_for_label }}">Primary Theme Color</label>
                     <div class="color-field-row">
                         {{ form.primary_color }}
                         <button type="button" class="btn btn-outline btn-sm" data-open-color-modal data-target="primary_color">
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="field-full">
-                    <label for="{{ form.secondary_color.id_for_label }}">Secondary Color</label>
+                    <label for="{{ form.secondary_color.id_for_label }}">Secondary Accent Color</label>
                     <div class="color-field-row">
                         {{ form.secondary_color }}
                         <button type="button" class="btn btn-outline btn-sm" data-open-color-modal data-target="secondary_color">
@@ -102,22 +102,27 @@
 <div id="color-modal" class="modal-overlay" hidden>
     <div class="modal-box">
         <div class="modal-header">
-            <span class="modal-title">New Color</span>
-            <button type="button" class="modal-close" data-close-color-modal aria-label="Close">✕</button>
+            <span class="modal-title">Create Custom Color</span>
+            <button type="button" class="modal-close" data-close-color-modal aria-label="Close modal">✕</button>
         </div>
 
         <div>
-            <label for="new-color-name">Name</label>
-            <input type="text" id="new-color-name" placeholder="e.g. Sunset Orange">
-
-            <div class="new-color-preview">
-                <input type="color" id="new-color-picker" value="#7c5cff">
-                <input type="text" id="new-color-hex" value="#7C5CFF" style="width:120px;" maxlength="7">
+            <div class="form-group">
+                <label for="new-color-name">Color Name</label>
+                <input type="text" id="new-color-name" placeholder="e.g. Forest Green or Sunset Orange">
             </div>
 
-            <div style="margin-top:14px;">
-                <label for="new-color-category">Category</label>
-                <input type="text" id="new-color-category" list="color-category-options" placeholder="e.g. Orange">
+            <div class="form-group" style="margin-top: 14px;">
+                <label>Hex Code & Color Picker</label>
+                <div class="new-color-preview">
+                    <input type="color" id="new-color-picker" value="#7c5cff">
+                    <input type="text" id="new-color-hex" value="#7C5CFF" style="width:140px;" maxlength="7">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 14px;">
+                <label for="new-color-category">Category Tag</label>
+                <input type="text" id="new-color-category" list="color-category-options" placeholder="e.g. Green or Blue">
                 <datalist id="color-category-options">
                     <option value="Black"></option>
                     <option value="White"></option>
@@ -149,14 +154,6 @@
 {% block extra_js %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
-    /* ------------------------------------------------------------
-       AJAX-backed Tom Select for the color fields.
-       Only the currently selected option ever ships in the HTML;
-       everything else is fetched from /colors/search/ on demand,
-       which is what keeps this page fast even with hundreds of
-       colors in the table.
-    ------------------------------------------------------------ */
     const colorInstances = {};
 
     function swatchRow(hex, name, category) {
@@ -193,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
             create: false,
             preload: false,
             loadThrottle: 300,
-            placeholder: "Search colors…",
+            placeholder: "Search color palette…",
             load: function (query, callback) {
                 fetch(`/colors/search/?q=${encodeURIComponent(query)}`)
                     .then((res) => res.json())
@@ -217,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return swatchRow(data.hex, escape(data.text), "");
                 },
                 no_results: function () {
-                    return '<div class="no-results" style="padding:10px 14px; font-size:13px; color:var(--grey-400);">No colors found</div>';
+                    return '<div class="no-results" style="padding:10px 14px; font-size:13px; color:var(--muted);">No matching colors found</div>';
                 },
             },
         });
@@ -225,9 +222,6 @@ document.addEventListener("DOMContentLoaded", function () {
         colorInstances[el.name] = instance;
     });
 
-    /* ------------------------------------------------------------
-       "+ New Color" modal
-    ------------------------------------------------------------ */
     const modal = document.getElementById("color-modal");
     const errorBox = document.getElementById("color-modal-error");
     const nameInput = document.getElementById("new-color-name");
@@ -290,7 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         if (!/^#([0-9A-Fa-f]{3}){1,2}$/.test(hex)) {
-            errorBox.textContent = "Please enter a valid hex color, e.g. #FF5733.";
+            errorBox.textContent = "Please enter a valid hex color code (e.g. #FF5733).";
             errorBox.classList.add("show");
             return;
         }
@@ -327,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     instance.addItem(String(data.id));
                 }
 
-                showToast(`"${data.name}" added and selected.`);
+                if (window.showToast) window.showToast(`"${data.name}" added to palette.`);
                 closeModal();
             })
             .catch(() => {
@@ -340,7 +334,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    /* Plain Tom Select for currency (small list, no AJAX needed) */
     document.querySelectorAll("select.tom-select").forEach(function (el) {
         new TomSelect(el, { create: false });
     });

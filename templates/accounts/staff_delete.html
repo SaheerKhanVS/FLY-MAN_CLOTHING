@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Staff · Flymen{% endblock %}
+{% block header_title %}Delete Staff Account{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 620px;">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow" style="color: var(--danger);">Danger Zone</p>
+      <h1>Delete Staff Member</h1>
+      <p>Confirm account deletion. This action cannot be reversed.</p>
+    </div>
+  </div>
+
+  <form class="card" method="post" style="border-top: 4px solid var(--danger);">
+    {% csrf_token %}
+    
+    <div style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px;">
+      <div class="modal-icon danger" style="margin-bottom: 0; flex: 0 0 auto;">!</div>
+      <div>
+        <h3 style="margin: 0 0 6px; font-size: 17px; font-family: var(--heading);">Are you absolutely sure?</h3>
+        <p style="margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45;">
+          You are about to permanently delete <strong>{{ profile_obj.user.full_name }}</strong> (@{{ profile_obj.user.username }}). All associated profile data will be permanently removed.
+        </p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="btn btn-outline" href="{% url 'staff_profile' profile_obj.pk %}">Cancel</a>
+      <button class="btn btn-danger" type="submit">Permanently Delete Staff</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

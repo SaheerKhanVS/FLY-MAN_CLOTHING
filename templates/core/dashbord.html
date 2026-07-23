@@ -1,19 +1,188 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Dashboard · Flymen{% endblock %}
 {% block header_title %}Dashboard{% endblock %}
+
 {% block content %}
 <section class="page">
-  <div class="page-head"><div><p class="eyebrow">Overview</p><h1>Good to see you.</h1><p>Here is a simple view of your Flymen Clothing workspace.</p></div><div class="page-actions"><a class="btn btn-outline" href="{% url 'company_profile' %}">Company profile</a><a class="btn" href="{% url 'settings' %}">Workspace settings</a></div></div>
+
+  <!-- Page Header -->
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Overview</p>
+      <h1>Good to see you, {{ request.user.first_name|default:request.user.username }}</h1>
+      <p>Here is your real-time Flymen Clothing business overview and workspace metrics.</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-outline" href="{% url 'company_profile' %}">
+        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M3 21h18M3 7v14M21 7v14M6 21V11M10 21V11M14 21V11M18 21V11M12 3l9 4H3l9-4z"/></svg>
+        Company Profile
+      </a>
+      <a class="btn" href="{% url 'settings' %}">
+        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Workspace Settings
+      </a>
+    </div>
+  </div>
+
+  <!-- User Greeting Card -->
+  <section class="card profile-summary" style="margin-bottom: 22px;">
+    {% if current_profile.profile_photo %}
+      <img class="profile-avatar" src="{{ current_profile.profile_photo.url }}" alt="{{ request.user.full_name }}">
+    {% else %}
+      <img class="profile-avatar" src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default user avatar">
+    {% endif %}
+    <div>
+      <h2 class="panel-title">Welcome back, {{ request.user.full_name }}</h2>
+      <p class="panel-subtitle">
+        <span class="badge badge-success">{{ request.user.get_user_type_display }}</span>
+        <span style="margin-left: 8px;">Last login: {{ request.user.last_login|date:"d M Y, H:i"|default:"First login session" }}</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Metric Grid -->
   <div class="metric-grid">
-    <article class="card metric-card"><span class="metric-label">Net income</span><div class="metric-value">₹0 <span class="metric-change">New</span></div><span class="metric-note">Start recording sales to track this.</span></article>
-    <article class="card metric-card"><span class="metric-label">Sales</span><div class="metric-value">₹0 <span class="metric-change">This month</span></div><span class="metric-note">No sales data yet.</span></article>
-    <article class="card metric-card"><span class="metric-label">Orders</span><div class="metric-value">0 <span class="metric-change">Open</span></div><span class="metric-note">Everything is up to date.</span></article>
-    <article class="card metric-card"><span class="metric-label">Workspace</span><div class="metric-value">Ready</div><span class="metric-note">Your company profile is configured.</span></article>
+    <article class="card metric-card">
+      <span class="metric-label">Net Income</span>
+      <div class="metric-value">
+        ₹0 
+        <span class="metric-change">New</span>
+      </div>
+      <span class="metric-note">Start recording sales to track net income.</span>
+    </article>
+
+    <article class="card metric-card">
+      <span class="metric-label">Monthly Sales</span>
+      <div class="metric-value">
+        ₹0 
+        <span class="metric-change">This month</span>
+      </div>
+      <span class="metric-note">No sales transactions logged yet.</span>
+    </article>
+
+    <article class="card metric-card">
+      <span class="metric-label">Active Orders</span>
+      <div class="metric-value">
+        0 
+        <span class="metric-change">Open</span>
+      </div>
+      <span class="metric-note">All pending orders are fulfilled.</span>
+    </article>
+
+    <article class="card metric-card">
+      <span class="metric-label">Workspace Status</span>
+      <div class="metric-value">
+        Ready
+        <span class="badge badge-info">Active</span>
+      </div>
+      <span class="metric-note">Company profile & theme configured.</span>
+    </article>
   </div>
+
+  <!-- Main Dashboard Grid -->
   <div class="dashboard-grid">
-    <section class="card chart-panel"><div class="panel-head"><div><h2 class="panel-title">Sales activity</h2><p class="panel-subtitle">Monthly sales will appear here as you add records.</p></div><span class="btn btn-ghost btn-sm">This month</span></div><div class="chart-area"><svg viewBox="0 0 700 205" preserveAspectRatio="none" role="img" aria-label="Empty sales activity chart"><path d="M0 160 C70 145 92 175 160 142 S256 127 312 151 S395 121 457 136 S548 155 606 112 S662 95 700 107 L700 205 L0 205Z" fill="rgba(var(--secondary-rgb), .10)"/><path d="M0 160 C70 145 92 175 160 142 S256 127 312 151 S395 121 457 136 S548 155 606 112 S662 95 700 107" fill="none" stroke="var(--secondary)" stroke-width="2.2"/><path d="M0 40H700M0 100H700M0 160H700" stroke="#e7eeeb" stroke-dasharray="4 5"/></svg></div></section>
-    <section class="card"><div class="panel-head"><div><h2 class="panel-title">Order funnel</h2><p class="panel-subtitle">Track your selling flow.</p></div></div><div class="summary-list"><div class="summary-row"><span>Product views<small>Visitor interest</small></span><strong>0</strong></div><div class="summary-row"><span>Add to cart<small>Potential orders</small></span><strong>0</strong></div><div class="summary-row"><span>Checkout started<small>Pending payment</small></span><strong>0</strong></div><div class="summary-row"><span>Completed sales<small>Finished orders</small></span><strong>0</strong></div></div></section>
+    
+    <!-- Sales Activity Chart -->
+    <section class="card chart-panel">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Sales Activity</h2>
+          <p class="panel-subtitle">Monthly sales performance visual trend graph.</p>
+        </div>
+        <span class="btn btn-ghost btn-sm">This Month</span>
+      </div>
+      <div class="chart-area">
+        <svg viewBox="0 0 700 205" preserveAspectRatio="none" role="img" aria-label="Sales activity chart grid">
+          <path d="M0 160 C70 145 92 175 160 142 S256 127 312 151 S395 121 457 136 S548 155 606 112 S662 95 700 107 L700 205 L0 205Z" fill="rgba(var(--secondary-rgb), .12)"/>
+          <path d="M0 160 C70 145 92 175 160 142 S256 127 312 151 S395 121 457 136 S548 155 606 112 S662 95 700 107" fill="none" stroke="var(--secondary)" stroke-width="2.5"/>
+          <path d="M0 40H700M0 100H700M0 160H700" stroke="#e0e9e5" stroke-dasharray="4 5"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Order Funnel -->
+    <section class="card">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Order Funnel</h2>
+          <p class="panel-subtitle">Track key conversion stages of your business.</p>
+        </div>
+      </div>
+      <div class="summary-list">
+        <div class="summary-row">
+          <span>
+            Product views
+            <small>Customer catalog interest</small>
+          </span>
+          <strong>0</strong>
+        </div>
+        <div class="summary-row">
+          <span>
+            Add to cart
+            <small>Potential purchases</small>
+          </span>
+          <strong>0</strong>
+        </div>
+        <div class="summary-row">
+          <span>
+            Checkout started
+            <small>Pending payments</small>
+          </span>
+          <strong>0</strong>
+        </div>
+        <div class="summary-row">
+          <span>
+            Completed sales
+            <small>Finished orders</small>
+          </span>
+          <strong>0</strong>
+        </div>
+      </div>
+    </section>
+
   </div>
-  <div class="lower-grid"><section class="card"><div class="panel-head"><div><h2 class="panel-title">Quick start</h2><p class="panel-subtitle">Finish setting up your workspace.</p></div></div><a class="quick-link" href="{% url 'company_profile' %}">Review company details <span>→</span></a><a class="quick-link" href="{% url 'settings' %}">Choose workspace colors <span>→</span></a></section><section class="card"><div class="panel-head"><div><h2 class="panel-title">Your workspace</h2><p class="panel-subtitle">The primary and secondary colors selected in settings are applied throughout this interface.</p></div></div><p style="margin:0;color:var(--muted);">Use the Company area to keep your business details current. All controls, cards, alerts, and dialogs share this responsive design system.</p></section></div>
+
+  <!-- Lower Quick Actions Grid -->
+  <div class="lower-grid">
+    <section class="card">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Quick Actions</h2>
+          <p class="panel-subtitle">Manage your company configuration.</p>
+        </div>
+      </div>
+      <a class="quick-link" href="{% url 'company_profile' %}">
+        <span>Review company details & logo</span>
+        <span>→</span>
+      </a>
+      <a class="quick-link" href="{% url 'settings' %}">
+        <span>Configure workspace theme colors</span>
+        <span>→</span>
+      </a>
+      <a class="quick-link" href="{% url 'staff_list' %}">
+        <span>Manage staff accounts</span>
+        <span>→</span>
+      </a>
+    </section>
+
+    <section class="card">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Theme & Customization</h2>
+          <p class="panel-subtitle">Dynamic color integration throughout Flymen ERP.</p>
+        </div>
+      </div>
+      <p style="margin: 0 0 14px; color: var(--muted); line-height: 1.5;">
+        Your primary (<strong style="color: var(--primary);">Primary</strong>) and secondary (<strong style="color: var(--secondary);">Secondary</strong>) colors selected in settings are automatically applied across cards, buttons, dialogs, and navigation elements.
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <span class="badge badge-success">Dynamic CSS Variables</span>
+        <span class="badge badge-info">Fully Responsive Layout</span>
+      </div>
+    </section>
+  </div>
+
 </section>
 {% endblock %}

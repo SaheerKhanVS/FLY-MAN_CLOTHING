@@ -1,0 +1,383 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Staff Directory Report - {{ company.company_name }}</title>
+
+<style>
+@page {
+    size: A4;
+    margin: 10mm 12mm 12mm 12mm;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #162420;
+    font-size: 10px;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+}
+
+.document {
+    width: 100%;
+}
+
+/* =========================
+   HEADER & METRICS
+========================= */
+.header-table {
+    width: 100%;
+    border-bottom: 2px solid #0d725d;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+}
+
+.brand-cell {
+    vertical-align: middle;
+}
+
+.brand-logo {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.title-cell {
+    vertical-align: middle;
+    text-align: right;
+}
+
+.doc-tag {
+    font-size: 9px;
+    font-weight: bold;
+    color: #31b77a;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.doc-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0b483d;
+    margin: 2px 0;
+    text-transform: uppercase;
+}
+
+.doc-sub {
+    font-size: 10px;
+    color: #5d706a;
+}
+
+.metrics-banner {
+    background: #edf4f1;
+    border: 1px solid #d4e2dc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.metrics-table {
+    width: 100%;
+}
+
+.metrics-table td {
+    vertical-align: middle;
+}
+
+.metric-box {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #ffffff;
+    border: 1px solid #d4e2dc;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+.metric-label {
+    font-size: 9px;
+    color: #6e807a;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.metric-num {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0b483d;
+}
+
+/* =========================
+   STAFF CARD GRID (2 PER ROW)
+========================= */
+.card-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 10px;
+    margin-top: -10px;
+}
+
+.staff-card-cell {
+    width: 50%;
+    vertical-align: top;
+}
+
+.staff-card {
+    background: #ffffff;
+    border: 1px solid #d4e2dc;
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+}
+
+.card-header {
+    width: 100%;
+    border-bottom: 1px solid #e7eeeb;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.avatar-cell {
+    width: 48px;
+    vertical-align: middle;
+}
+
+.avatar-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #0d725d;
+}
+
+.name-cell {
+    vertical-align: middle;
+    padding-left: 8px;
+}
+
+.staff-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0b483d;
+    margin: 0;
+}
+
+.staff-username {
+    font-size: 10px;
+    color: #6e807a;
+    margin-top: 1px;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5px;
+}
+
+.details-table td {
+    padding: 3px 0;
+    vertical-align: top;
+}
+
+.lbl {
+    color: #6e807a;
+    font-weight: bold;
+    width: 40%;
+}
+
+.val {
+    color: #162420;
+    font-weight: 600;
+    width: 60%;
+    text-align: right;
+}
+
+.badge {
+    display: inline-block;
+    padding: 1.5px 6px;
+    border-radius: 3px;
+    font-size: 8.5px;
+    font-weight: bold;
+}
+
+.badge-success {
+    background: #e3f7ed;
+    color: #0d6e43;
+    border: 1px solid #b8ebcf;
+}
+
+.badge-danger {
+    background: #fde8e8;
+    color: #b02a2a;
+    border: 1px solid #f9c6c6;
+}
+
+.badge-info {
+    background: #e8f1fd;
+    color: #1a56b0;
+    border: 1px solid #c7ddfb;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer {
+    margin-top: 20px;
+    border-top: 1px solid #d4e2dc;
+    padding-top: 8px;
+    width: 100%;
+    font-size: 8.5px;
+    color: #6e807a;
+}
+
+.footer-table {
+    width: 100%;
+}
+
+.footer-right {
+    text-align: right;
+}
+</style>
+</head>
+
+<body>
+<div class="document">
+
+    <!-- HEADER -->
+    <table class="header-table">
+        <tr>
+            <td class="brand-cell">
+                {% if company.logo %}
+                    <img src="{{ company.logo.url }}" alt="Logo" class="brand-logo">
+                {% else %}
+                    <div style="font-size: 20px; font-weight: 800; color: #0b483d;">{{ company.company_name }}</div>
+                {% endif %}
+            </td>
+            <td class="title-cell">
+                <div class="doc-tag">Flymen ERP Staff Management</div>
+                <div class="doc-title">Staff Members Directory</div>
+                <div class="doc-sub">Official Personnel & Account Profiles</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- METRICS BANNER -->
+    <div class="metrics-banner">
+        <table class="metrics-table">
+            <tr>
+                <td>
+                    <div class="metric-box">
+                        <span class="metric-label">Total Staff Count:</span>
+                        <span class="metric-num">{{ staff_count }}</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Active Accounts:</span>
+                        <span class="metric-num" style="color: #159b62;">{{ active_count }}</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Inactive Accounts:</span>
+                        <span class="metric-num" style="color: #d14d4d;">{{ inactive_count }}</span>
+                    </div>
+                </td>
+                <td style="text-align: right; font-size: 9px; color: #6e807a;">
+                    Company: <strong>{{ company.company_name }}</strong>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- STAFF CARDS -->
+    <table class="card-table">
+        {% for pair in staff_pairs %}
+        <tr>
+            {% for profile_obj in pair %}
+            <td class="staff-card-cell">
+                <div class="staff-card">
+                    <table class="card-header">
+                        <tr>
+                            <td class="avatar-cell">
+                                {% if profile_obj.profile_photo %}
+                                    <img src="{{ profile_obj.profile_photo.url }}" class="avatar-img">
+                                {% else %}
+                                    <img src="{% static 'images/default-user.png' %}" class="avatar-img">
+                                {% endif %}
+                            </td>
+                            <td class="name-cell">
+                                <h3 class="staff-name">{{ profile_obj.user.full_name }}</h3>
+                                <div class="staff-username">@{{ profile_obj.user.username }}</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="details-table">
+                        <tr>
+                            <td class="lbl">Staff Code:</td>
+                            <td class="val"><code>{{ profile_obj.staff_code }}</code></td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">Account Status:</td>
+                            <td class="val">
+                                {% if profile_obj.user.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">Phone Number:</td>
+                            <td class="val">{{ profile_obj.user.phone|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">Email Address:</td>
+                            <td class="val">{{ profile_obj.user.email|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">Joining Date:</td>
+                            <td class="val">{{ profile_obj.joining_date|date:"d M Y"|default:"—" }}</td>
+                        </tr>
+                        {% if request.user.is_owner %}
+                        <tr>
+                            <td class="lbl">Monthly Salary:</td>
+                            <td class="val">₹{{ profile_obj.salary }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="lbl">Commission:</td>
+                            <td class="val">
+                                {% if profile_obj.commission_enabled %}
+                                    <span class="badge badge-info">Enabled</span>
+                                {% else %}
+                                    Disabled
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+            {% endfor %}
+            {% if pair|length == 1 %}
+            <td class="staff-card-cell"></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <table class="footer-table">
+            <tr>
+                <td>Generated by Flymen Clothing ERP Personnel System</td>
+                <td class="footer-right">Generated On: {% now "d M Y, H:i" %} UTC</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

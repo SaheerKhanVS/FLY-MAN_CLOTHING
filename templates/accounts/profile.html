@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile · Flymen{% endblock %}
+{% block header_title %}My Profile{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 920px;">
+    
+    <!-- Profile View Card -->
+    <div id="profile-view" class="card">
+        <div class="profile-summary">
+            {% if profile_obj.profile_photo %}
+                <img class="profile-avatar" src="{{ profile_obj.profile_photo.url }}" alt="{{ request.user.full_name }}">
+            {% else %}
+                <img class="profile-avatar" src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default profile photo">
+            {% endif %}
+            <div>
+                <h2>{{ request.user.full_name }}</h2>
+                <p>
+                    <span class="badge badge-success">{{ request.user.get_user_type_display }}</span>
+                    <span style="margin-left: 6px;">@{{ request.user.username }}</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-detail-grid">
+            <div>
+                <small>First Name</small>
+                <strong>{{ request.user.first_name|default:"—" }}</strong>
+            </div>
+            <div>
+                <small>Last Name</small>
+                <strong>{{ request.user.last_name|default:"—" }}</strong>
+            </div>
+            <div>
+                <small>Email Address</small>
+                <strong>{{ request.user.email|default:"—" }}</strong>
+            </div>
+            <div>
+                <small>Phone Number</small>
+                <strong>{{ request.user.phone|default:"—" }}</strong>
+            </div>
+            <div>
+                <small>Staff Code</small>
+                <strong>{{ profile_obj.staff_code }}</strong>
+            </div>
+            <div>
+                <small>Joining Date</small>
+                <strong>{{ profile_obj.joining_date|date:"d M Y" }}</strong>
+            </div>
+            {% if request.user.is_owner %}
+            <div>
+                <small>Monthly Salary</small>
+                <strong>₹{{ profile_obj.salary }}</strong>
+            </div>
+            {% endif %}
+            <div>
+                <small>Commission System</small>
+                <strong>
+                    {% if profile_obj.commission_enabled %}
+                        <span class="badge badge-success">Enabled</span>
+                    {% else %}
+                        <span class="badge badge-neutral">Disabled</span>
+                    {% endif %}
+                </strong>
+            </div>
+            <div>
+                <small>Notes / Remarks</small>
+                <strong>{{ profile_obj.notes|default:"No notes recorded" }}</strong>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn" id="edit-btn">
+                <svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Profile Edit Form Card -->
+    <div id="profile-edit" class="card" style="display:none;">
+        <div class="panel-head">
+            <div>
+                <h2 class="panel-title">Edit Profile Information</h2>
+                <p class="panel-subtitle">Update your personal information and profile picture.</p>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First Name</label>
+                    {{ user_form.first_name }}
+                    {{ user_form.first_name.errors }}
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    {{ user_form.last_name }}
+                    {{ user_form.last_name.errors }}
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    {{ user_form.email }}
+                    {{ user_form.email.errors }}
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    {{ user_form.phone }}
+                    {{ user_form.phone.errors }}
+                </div>
+                <div class="form-group form-full">
+                    <label>Profile Photo</label>
+                    <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                        <img id="user-profile-preview" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,.08); flex:0 0 auto;"
+                             {% if profile_obj.profile_photo %}
+                                 src="{{ profile_obj.profile_photo.url }}"
+                             {% else %}
+                                 src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'"
+                             {% endif %}
+                             alt="Profile photo preview">
+                        <div>
+                            <strong style="display:block; font-size:13px;">Photo Preview</strong>
+                            <small style="color:var(--muted); font-size:11px;">Current picture shown. Select a new file to preview changes before saving.</small>
+                        </div>
+                    </div>
+                    {{ details_form.profile_photo }}
+                    {{ details_form.profile_photo.errors }}
+                </div>
+                <div class="form-group field-full">
+                    <label>Notes</label>
+                    {{ details_form.notes }}
+                    {{ details_form.notes.errors }}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline" id="cancel-btn">Cancel</button>
+                <button class="btn" type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+</section>
+
+<script>
+    const profileView = document.getElementById("profile-view");
+    const profileEdit = document.getElementById("profile-edit");
+    document.getElementById("edit-btn").onclick = function(){
+        profileView.style.display = "none";
+        profileEdit.style.display = "block";
+    };
+    document.getElementById("cancel-btn").onclick = function(){
+        profileEdit.style.display = "none";
+        profileView.style.display = "block";
+    };
+
+    const photoInput = document.getElementById("{{ details_form.profile_photo.id_for_label }}") || document.querySelector('input[type="file"][name*="profile_photo"]');
+    if (photoInput) {
+        photoInput.addEventListener("change", function () {
+            const file = this.files[0];
+            const preview = document.getElementById("user-profile-preview");
+            if (file && preview) {
+                preview.src = URL.createObjectURL(file);
+            }
+        });
+    }
+</script>
+{% endblock %}
