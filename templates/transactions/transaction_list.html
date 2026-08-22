@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Transactions & Vouchers · Flymen Clothing{% endblock %}
+{% block header_title %}Transactions & Vouchers{% endblock %}
+
+{% block content %}
+<section class="page">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Financial Vouchers</p>
+      <h1>Transactions Directory</h1>
+      <p>Record and monitor payments and receipts between party accounts with real-time balance calculations.</p>
+    </div>
+    <div class="page-actions" style="display:flex; gap:10px;">
+      <a class="btn btn-primary" href="{% url 'transaction_create' %}?type=receipt">
+        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        + Record Receipt (Money In)
+      </a>
+      <a class="btn btn-outline" href="{% url 'transaction_create' %}?type=payment" style="border-color:var(--danger); color:var(--danger);">
+        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        - Record Payment (Money Out)
+      </a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; background-color: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: var(--fg-primary);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Filter & Search Toolbar -->
+  <div class="card" style="padding: 16px; margin-bottom: 24px;">
+    <form method="get" action="{% url 'transaction_list' %}" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+      <div style="display:flex; flex:1; min-width:260px; gap:8px;">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search by party, reason, amount..." style="width:100%;">
+        <button class="btn" type="submit">Search</button>
+        {% if query or selected_type or selected_party_id %}
+          <a class="btn btn-outline" href="{% url 'transaction_list' %}">Reset</a>
+        {% endif %}
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:13px; font-weight:600; color:var(--muted);">Filter Type:</span>
+        <a href="{% url 'transaction_list' %}{% if query %}?q={{ query }}{% endif %}" class="btn btn-sm {% if not selected_type %}btn-primary{% else %}btn-outline{% endif %}">All</a>
+        <a href="{% url 'transaction_list' %}?type=receipt{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if selected_type == 'receipt' %}btn-primary{% else %}btn-outline{% endif %}">Receipts</a>
+        <a href="{% url 'transaction_list' %}?type=payment{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if selected_type == 'payment' %}btn-primary{% else %}btn-outline{% endif %}">Payments</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Transactions Data Table -->
+  {% if page_obj %}
+    <div class="data-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Voucher #</th>
+            <th>Date & Time</th>
+            <th>Type</th>
+            <th>From Party</th>
+            <th>To Party</th>
+            <th>Reason / Notes</th>
+            <th style="text-align:right;">Amount (₹)</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for txn in page_obj %}
+            <tr>
+              <td>
+                <a href="{% url 'transaction_detail' txn.pk %}" style="font-weight:700; color:var(--primary);">
+                  #TXN-{{ txn.pk|stringformat:"05d" }}
+                </a>
+              </td>
+
+              <td style="white-space:nowrap; color:var(--muted); font-size:12px;">
+                {{ txn.date_time|date:"d M Y, h:i A" }}
+              </td>
+
+              <td>
+                {% if txn.transaction_type == 'receipt' %}
+                  <span class="badge badge-success">Receipt</span>
+                {% else %}
+                  <span class="badge badge-danger">Payment</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if txn.from_party %}
+                  <a href="{% url 'party_detail' txn.from_party.pk %}" style="font-weight:600; color:var(--ink);">
+                    {{ txn.from_party.name }}
+                  </a>
+                  <div style="font-size:11px; color:var(--muted);">{{ txn.from_party.party_type.name }}</div>
+                {% else %}
+                  <span style="color:var(--muted);">—</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if txn.to_party %}
+                  <a href="{% url 'party_detail' txn.to_party.pk %}" style="font-weight:600; color:var(--ink);">
+                    {{ txn.to_party.name }}
+                  </a>
+                  <div style="font-size:11px; color:var(--muted);">{{ txn.to_party.party_type.name }}</div>
+                {% else %}
+                  <span style="color:var(--muted);">—</span>
+                {% endif %}
+              </td>
+
+              <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                {{ txn.reason|default:"—" }}
+              </td>
+
+              <td style="text-align:right; font-weight:700; font-size:14px; color:{% if txn.transaction_type == 'receipt' %}#10b981{% else %}#ef4444{% endif %};">
+                ₹{{ txn.amount }}
+              </td>
+
+              <td style="text-align:right;">
+                <div style="display:inline-flex; gap:6px; justify-content:flex-end;">
+                  <a href="{% url 'transaction_detail' txn.pk %}" class="btn btn-sm btn-outline" title="View Voucher">Voucher</a>
+                  <a href="{% url 'transaction_delete' txn.pk %}" class="btn btn-sm btn-danger" title="Delete Voucher">Delete</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div style="margin-top: 24px; display:flex; justify-content:center; gap:8px;">
+        {% if page_obj.has_previous %}
+          <a class="btn btn-outline" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}">Previous</a>
+        {% endif %}
+        <span class="btn btn-disabled" style="cursor:default;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="btn btn-outline" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}">Next</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="card" style="text-align:center; padding: 48px 20px;">
+      <svg style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.5;margin-bottom:12px;" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <h3>No Transactions Recorded</h3>
+      <p style="color:var(--muted); margin-bottom:16px;">Record your first payment or receipt voucher to track balances.</p>
+      <a href="{% url 'transaction_create' %}" class="btn btn-primary">Record New Transaction</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

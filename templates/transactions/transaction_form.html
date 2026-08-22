@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Record Transaction Voucher · Flymen Clothing{% endblock %}
+{% block header_title %}Record Transaction Voucher{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 760px;">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Financial Vouchers</p>
+      <h1>Record Transaction Voucher</h1>
+      <p>Select Transaction Type (Receipt or Payment), From Party, To Party, Amount, Date & Time, and Reason.</p>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; background-color: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: var(--fg-primary);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form class="card" method="post">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div style="background-color: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="form-grid">
+      <!-- Transaction Type -->
+      <div class="form-group field-full">
+        <label for="{{ form.transaction_type.id_for_label }}">Transaction Voucher Type *</label>
+        {{ form.transaction_type }}
+        {% if form.transaction_type.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.transaction_type.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- From Party -->
+      <div class="form-group">
+        <label for="{{ form.from_party.id_for_label }}">From Party (Payer / Sender) *</label>
+        {{ form.from_party }}
+        {% if form.from_party.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.from_party.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- To Party -->
+      <div class="form-group">
+        <label for="{{ form.to_party.id_for_label }}">To Party (Receiver / Beneficiary) *</label>
+        {{ form.to_party }}
+        {% if form.to_party.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.to_party.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Amount -->
+      <div class="form-group">
+        <label for="{{ form.amount.id_for_label }}">Amount (₹) *</label>
+        {{ form.amount }}
+        {% if form.amount.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.amount.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Date & Time -->
+      <div class="form-group">
+        <label for="{{ form.date_time.id_for_label }}">Date & Time *</label>
+        {{ form.date_time }}
+        {% if form.date_time.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.date_time.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Reason / Notes -->
+      <div class="form-group field-full">
+        <label for="{{ form.reason.id_for_label }}">Reason / Description / Reference Notes</label>
+        {{ form.reason }}
+        {% if form.reason.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.reason.errors.0 }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-actions" style="margin-top: 20px;">
+      <a class="btn btn-outline" href="{% url 'transaction_list' %}">Cancel</a>
+      <button class="btn btn-primary" type="submit">Record Voucher</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

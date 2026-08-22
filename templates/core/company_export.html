@@ -29,7 +29,7 @@ body {
 ========================= */
 .header-table {
     width: 100%;
-    border-bottom: 2.5px solid #0d725d;
+    border-bottom: 2.5px solid {{ primary_color_hex|default:'#7c5cff' }};
     padding-bottom: 12px;
     margin-bottom: 16px;
 }
@@ -53,7 +53,7 @@ body {
 .doc-tag {
     font-size: 9px;
     font-weight: bold;
-    color: #31b77a;
+    color: {{ primary_color_hex|default:'#7c5cff' }};
     letter-spacing: 1px;
     text-transform: uppercase;
 }
@@ -61,7 +61,7 @@ body {
 .doc-title {
     font-size: 20px;
     font-weight: 800;
-    color: #0b483d;
+    color: {{ primary_color_hex|default:'#7c5cff' }};
     margin: 2px 0;
     text-transform: uppercase;
 }
@@ -79,7 +79,7 @@ body {
 }
 
 .section-head {
-    background: #0b483d;
+    background: {{ primary_color_hex|default:'#7c5cff' }};
     color: #ffffff;
     padding: 6px 10px;
     font-size: 11px;
@@ -92,7 +92,7 @@ body {
 .info-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #d8e5e0;
+    border: 1px solid {{ primary_color_hex|default:'#7c5cff' }}33;
     border-top: none;
 }
 
@@ -115,7 +115,7 @@ body {
     width: 20%;
     font-weight: bold;
     color: #3c4f49;
-    background: #f6faf8;
+    background: {{ secondary_color_hex|default:'#00d4c8' }}15;
 }
 
 .val {
@@ -133,9 +133,9 @@ body {
 }
 
 .badge-success {
-    background: #e3f7ed;
-    color: #0d6e43;
-    border: 1px solid #b8ebcf;
+    background: {{ secondary_color_hex|default:'#00d4c8' }}20;
+    color: {{ primary_color_hex|default:'#7c5cff' }};
+    border: 1px solid {{ primary_color_hex|default:'#7c5cff' }}40;
 }
 
 .badge-info {
@@ -155,7 +155,7 @@ body {
 ========================= */
 .footer {
     margin-top: 24px;
-    border-top: 1px solid #d8e5e0;
+    border-top: 1px solid {{ primary_color_hex|default:'#7c5cff' }}33;
     padding-top: 10px;
     width: 100%;
 }
@@ -197,39 +197,13 @@ body {
         </tr>
     </table>
 
-    <!-- COMPANY & OWNER DETAILS -->
+    <!-- COMPANY DETAILS -->
     <div class="section">
-        <div class="section-head">1. Business Identity & Owner Credentials</div>
+        <div class="section-head">1. Business Identity & Registration</div>
         <table class="info-table">
             <tr>
                 <td class="lbl">Company Name</td>
                 <td class="val"><strong>{{ company.company_name }}</strong></td>
-                <td class="lbl">Assigned Owner</td>
-                <td class="val">
-                    {% if company.owner %}
-                        <strong>{{ company.owner.full_name }}</strong> (@{{ company.owner.username }})
-                    {% else %}
-                        Unassigned
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td class="lbl">Company Phone</td>
-                <td class="val">{{ company.phone }}</td>
-                <td class="lbl">Owner Contact</td>
-                <td class="val">{{ company.owner.phone|default:"—" }}</td>
-            </tr>
-            <tr>
-                <td class="lbl">Company Email</td>
-                <td class="val">{{ company.email }}</td>
-                <td class="lbl">Owner Email</td>
-                <td class="val">{{ company.owner.email|default:"—" }}</td>
-            </tr>
-            <tr>
-                <td class="lbl">Address</td>
-                <td class="val" colspan="3">{{ company.address }}, {{ company.city }}, {{ company.state }} {{ company.postal_code }}, {{ company.country }}</td>
-            </tr>
-            <tr>
                 <td class="lbl">GST Identification</td>
                 <td class="val">
                     {% if company.gst_number %}
@@ -238,15 +212,66 @@ body {
                         Not provided
                     {% endif %}
                 </td>
+            </tr>
+            <tr>
+                <td class="lbl">Company Phone</td>
+                <td class="val">{{ company.phone }}</td>
+                <td class="lbl">Company Email</td>
+                <td class="val">{{ company.email }}</td>
+            </tr>
+            <tr>
+                <td class="lbl">Official Address</td>
+                <td class="val" colspan="3">{{ company.address }}, {{ company.city }}, {{ company.state }} {{ company.postal_code }}, {{ company.country }}</td>
+            </tr>
+            <tr>
                 <td class="lbl">Registration Date</td>
                 <td class="val">{{ company.created_at|date:"d M Y" }}</td>
+                <td class="lbl">Last Updated</td>
+                <td class="val">{{ company.updated_at|date:"d M Y, H:i" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- OWNER USER DETAILS -->
+    <div class="section">
+        <div class="section-head">2. Executive Owner Profile & User Credentials</div>
+        <table class="info-table">
+            <tr>
+                <td class="lbl">Owner Full Name</td>
+                <td class="val">
+                    {% if company.owner %}
+                        <strong>{{ company.owner.full_name }}</strong>
+                    {% else %}
+                        Unassigned
+                    {% endif %}
+                </td>
+                <td class="lbl">Account Role</td>
+                <td class="val">
+                    {% if company.owner %}
+                        <span class="badge badge-success">{{ company.owner.get_user_type_display }}</span>
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="lbl">Owner Username</td>
+                <td class="val">{% if company.owner %}@{{ company.owner.username }}{% else %}—{% endif %}</td>
+                <td class="lbl">Owner Contact Phone</td>
+                <td class="val">{% if company.owner %}<strong>{{ company.owner.phone|default:"—" }}</strong>{% else %}—{% endif %}</td>
+            </tr>
+            <tr>
+                <td class="lbl">Owner Email</td>
+                <td class="val">{% if company.owner %}{{ company.owner.email|default:"—" }}{% else %}—{% endif %}</td>
+                <td class="lbl">Owner Staff Code</td>
+                <td class="val">{% if company.owner and company.owner.staff_profile.staff_code %}<code>{{ company.owner.staff_profile.staff_code }}</code>{% else %}—{% endif %}</td>
             </tr>
         </table>
     </div>
 
     <!-- SYSTEM SETTINGS -->
     <div class="section">
-        <div class="section-head">2. Financial Defaults & System Parameters</div>
+        <div class="section-head">3. Financial Defaults & System Parameters</div>
         <table class="info-table">
             <tr>
                 <td class="lbl">Operating Currency</td>

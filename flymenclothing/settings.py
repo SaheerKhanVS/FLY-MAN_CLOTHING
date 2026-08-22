@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'accounts',
     # MANUALLY ADDED APPS
     'core',
+    'parties',
+    'transactions',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -91,8 +93,18 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT'),
+        'CONN_MAX_AGE': 600,
+        'CONN_HEALTH_CHECKS': True,
     }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'flymen-local-cache',
+    }
+}
+
 
 
 # Password validation

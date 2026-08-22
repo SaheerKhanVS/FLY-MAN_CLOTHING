@@ -88,6 +88,62 @@
                 </div>
             </div>
 
+            <div class="settings-section-title">Display & Interface Size Adjuster</div>
+            <div class="settings-grid">
+                <div>
+                    <label for="{{ form.font_size.id_for_label }}">System Font Size</label>
+                    <div class="size-adjuster-row">
+                        <button type="button" class="btn btn-outline btn-sm size-step-btn" data-target="{{ form.font_size.id_for_label }}" data-step="-1" title="Decrease font size">
+                            A-
+                        </button>
+                        {{ form.font_size }}
+                        <button type="button" class="btn btn-outline btn-sm size-step-btn" data-target="{{ form.font_size.id_for_label }}" data-step="1" title="Increase font size">
+                            A+
+                        </button>
+                    </div>
+                    {{ form.font_size.errors }}
+                </div>
+
+                <div>
+                    <label for="{{ form.object_size.id_for_label }}">Object & Element Size (UI Scale)</label>
+                    <div class="size-adjuster-row">
+                        <button type="button" class="btn btn-outline btn-sm size-step-btn" data-target="{{ form.object_size.id_for_label }}" data-step="-1" title="Decrease object size">
+                            ▫ Compact
+                        </button>
+                        {{ form.object_size }}
+                        <button type="button" class="btn btn-outline btn-sm size-step-btn" data-target="{{ form.object_size.id_for_label }}" data-step="1" title="Increase object size">
+                            █ Expand
+                        </button>
+                    </div>
+                    {{ form.object_size.errors }}
+                </div>
+
+                <div class="field-full">
+                    <div class="size-preview-card">
+                        <div class="panel-head" style="margin-bottom: 12px; padding-bottom: 10px;">
+                            <div>
+                                <h3 class="panel-title" style="color: var(--primary);">Live Interface Preview</h3>
+                                <p class="panel-subtitle" id="preview-status-text">Text typography and object sizes update immediately as you adjust</p>
+                            </div>
+                            <span class="badge badge-success" id="preview-active-badge">Medium (Default)</span>
+                        </div>
+                        <div class="size-preview-content">
+                            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px;">
+                                <button type="button" class="btn">Primary Action</button>
+                                <button type="button" class="btn btn-outline">Secondary Action</button>
+                                <span class="badge badge-info">Sample Tag</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: center;">
+                                <input type="text" readonly value="Sample input text preview..." style="width: 100%;">
+                                <div style="font-weight: 600; color: var(--ink);">
+                                    Sample Form & Card Label Text
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="settings-footer">
                 <button type="submit" class="btn">Update Settings</button>
             </div>
@@ -219,8 +275,35 @@ document.addEventListener("DOMContentLoaded", function () {
             },
         });
 
+        instance.on('change', function() {
+            applyThemeColorsLive();
+        });
+
         colorInstances[el.name] = instance;
     });
+
+    function hexToRgb(hex) {
+        const val = (hex || '').replace('#', '');
+        const norm = val.length === 3 ? val.split('').map(x => x + x).join('') : val;
+        if (!/^[0-9a-f]{6}$/i.test(norm)) return null;
+        return norm.match(/.{2}/g).map(x => parseInt(x, 16)).join(', ');
+    }
+
+    function applyThemeColorsLive() {
+        const primaryOption = colorInstances['primary_color']?.options[colorInstances['primary_color'].getValue()];
+        const secondaryOption = colorInstances['secondary_color']?.options[colorInstances['secondary_color'].getValue()];
+
+        if (primaryOption && primaryOption.hex) {
+            document.documentElement.style.setProperty('--primary', primaryOption.hex);
+            const rgb = hexToRgb(primaryOption.hex);
+            if (rgb) document.documentElement.style.setProperty('--primary-rgb', rgb);
+        }
+        if (secondaryOption && secondaryOption.hex) {
+            document.documentElement.style.setProperty('--secondary', secondaryOption.hex);
+            const rgb = hexToRgb(secondaryOption.hex);
+            if (rgb) document.documentElement.style.setProperty('--secondary-rgb', rgb);
+        }
+    }
 
     const modal = document.getElementById("color-modal");
     const errorBox = document.getElementById("color-modal-error");
@@ -319,6 +402,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         category: data.category,
                     });
                     instance.addItem(String(data.id));
+                    applyThemeColorsLive();
                 }
 
                 if (window.showToast) window.showToast(`"${data.name}" added to palette.`);
@@ -337,6 +421,54 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("select.tom-select").forEach(function (el) {
         new TomSelect(el, { create: false });
     });
+
+    // Dynamic Font & Object Size Live Preview & Stepper handler
+    const fontSelectEl = document.getElementById('{{ form.font_size.id_for_label }}');
+    const objSelectEl = document.getElementById('{{ form.object_size.id_for_label }}');
+    const previewBadge = document.getElementById('preview-active-badge');
+    const previewStatusText = document.getElementById('preview-status-text');
+
+    const sizeOrder = ['small', 'medium', 'large', 'xlarge'];
+
+    function syncSizeAdjuster() {
+        const fontVal = fontSelectEl ? fontSelectEl.value : 'medium';
+        const objVal = objSelectEl ? objSelectEl.value : 'medium';
+
+        if (window.applyAppearanceSettings) {
+            window.applyAppearanceSettings(fontVal, objVal);
+        } else {
+            document.documentElement.dataset.fontSize = fontVal;
+            document.documentElement.dataset.objectSize = objVal;
+        }
+
+        if (previewBadge) {
+            const fontTitle = fontVal.charAt(0).toUpperCase() + fontVal.slice(1);
+            const objTitle = objVal.charAt(0).toUpperCase() + objVal.slice(1);
+            previewBadge.textContent = `${fontTitle} Text · ${objTitle} UI`;
+        }
+        if (previewStatusText) {
+            previewStatusText.textContent = `Applied: Font (${fontVal}) & Object scale (${objVal})`;
+        }
+    }
+
+    if (fontSelectEl) fontSelectEl.addEventListener('change', syncSizeAdjuster);
+    if (objSelectEl) objSelectEl.addEventListener('change', syncSizeAdjuster);
+
+    document.querySelectorAll('.size-step-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const step = parseInt(this.dataset.step, 10);
+            const selectEl = document.getElementById(targetId);
+            if (!selectEl) return;
+
+            const currentIndex = sizeOrder.indexOf(selectEl.value);
+            const nextIndex = Math.min(Math.max(currentIndex + step, 0), sizeOrder.length - 1);
+            selectEl.value = sizeOrder[nextIndex];
+            syncSizeAdjuster();
+        });
+    });
+
+    syncSizeAdjuster();
 });
 </script>
 {% endblock %}

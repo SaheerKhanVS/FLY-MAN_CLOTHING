@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Voucher #TXN-{{ transaction.pk|stringformat:"05d" }} · Flymen Clothing{% endblock %}
+{% block header_title %}Voucher #TXN-{{ transaction.pk|stringformat:"05d" }}{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 680px;">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Financial Voucher Details</p>
+      <h1>Transaction #TXN-{{ transaction.pk|stringformat:"05d" }}</h1>
+      <p>Recorded on {{ transaction.date_time|date:"d F Y \a\t h:i A" }}</p>
+    </div>
+    <div class="page-actions" style="display:flex; gap:8px;">
+      <a class="btn btn-outline" href="{% url 'transaction_list' %}">Back to List</a>
+      <button class="btn btn-outline" onclick="window.print();">Print Voucher</button>
+      <a class="btn btn-danger" href="{% url 'transaction_delete' transaction.pk %}">Delete</a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; background-color: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: var(--fg-primary);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Voucher Receipt Card -->
+  <div class="card" style="padding: 32px; border-top: 5px solid {% if transaction.transaction_type == 'receipt' %}#10b981{% else %}#ef4444{% endif %};">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--canvas); padding-bottom:16px;">
+      <div>
+        <h2 style="margin:0 0 4px 0; font-size:22px; font-weight:800; color:var(--primary);">FLYMEN CLOTHING</h2>
+        <small style="color:var(--muted); font-size:12px;">Financial Transaction Receipt</small>
+      </div>
+      <div style="text-align:right;">
+        {% if transaction.transaction_type == 'receipt' %}
+          <span class="badge badge-success" style="font-size:14px; padding:6px 14px;">RECEIPT VOUCHER</span>
+        {% else %}
+          <span class="badge badge-danger" style="font-size:14px; padding:6px 14px;">PAYMENT VOUCHER</span>
+        {% endif %}
+        <div style="font-size:12px; color:var(--muted); margin-top:6px;">Voucher No: #TXN-{{ transaction.pk|stringformat:"05d" }}</div>
+      </div>
+    </div>
+
+    <!-- Amount Banner -->
+    <div style="background:var(--canvas); padding:20px; border-radius:12px; text-align:center; margin-bottom:24px; border:1px solid var(--line);">
+      <small style="display:block; color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;">TOTAL AMOUNT</small>
+      <strong style="font-size:32px; font-weight:800; color:{% if transaction.transaction_type == 'receipt' %}#10b981{% else %}#ef4444{% endif %}; font-family:var(--heading);">
+        ₹{{ transaction.amount }}
+      </strong>
+    </div>
+
+    <!-- Details Grid -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px;">
+      <div style="background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px;">
+        <small style="display:block; color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; margin-bottom:6px;">FROM PARTY (PAYER)</small>
+        {% if transaction.from_party %}
+          <a href="{% url 'party_detail' transaction.from_party.pk %}" style="font-weight:700; font-size:16px; color:var(--ink);">
+            {{ transaction.from_party.name }}
+          </a>
+          <div style="font-size:12px; color:var(--muted); margin-top:2px;">{{ transaction.from_party.party_type.name }}</div>
+          {% if transaction.from_party.phone_1 %}
+            <div style="font-size:12px; margin-top:4px;">📞 {{ transaction.from_party.phone_1 }}</div>
+          {% endif %}
+        {% else %}
+          <span style="color:var(--muted);">—</span>
+        {% endif %}
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px;">
+        <small style="display:block; color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; margin-bottom:6px;">TO PARTY (RECEIVER)</small>
+        {% if transaction.to_party %}
+          <a href="{% url 'party_detail' transaction.to_party.pk %}" style="font-weight:700; font-size:16px; color:var(--ink);">
+            {{ transaction.to_party.name }}
+          </a>
+          <div style="font-size:12px; color:var(--muted); margin-top:2px;">{{ transaction.to_party.party_type.name }}</div>
+          {% if transaction.to_party.phone_1 %}
+            <div style="font-size:12px; margin-top:4px;">📞 {{ transaction.to_party.phone_1 }}</div>
+          {% endif %}
+        {% else %}
+          <span style="color:var(--muted);">—</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Reason & Metadata -->
+    <div style="border-top:1px solid var(--line); padding-top:18px;">
+      <div style="margin-bottom:12px;">
+        <strong style="font-size:12px; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:4px;">Reason / Reference Notes:</strong>
+        <p style="margin:0; font-size:14px; color:var(--ink);">{{ transaction.reason|default:"No description provided." }}</p>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; color:var(--muted); font-size:12px; margin-top:20px; padding-top:12px; border-top:1px dashed var(--line);">
+        <span>Date & Time: <strong>{{ transaction.date_time|date:"d M Y, h:i A" }}</strong></span>
+        {% if transaction.created_by %}
+          <span>Recorded By: <strong>{{ transaction.created_by.full_name }}</strong></span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

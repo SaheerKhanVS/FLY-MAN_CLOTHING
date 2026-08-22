@@ -45,6 +45,23 @@
 
     <div class="profile-detail-grid">
       <div>
+        <small>Username</small>
+        <strong>@{{ profile_obj.user.username }}</strong>
+      </div>
+      <div>
+        <small>Password</small>
+        <strong style="display:flex; align-items:center; gap:8px;">
+          <span id="staff-pwd-text" data-password="{{ profile_obj.user.raw_password|default:'' }}">••••••••</span>
+          {% if profile_obj.user.raw_password %}
+          <button type="button" class="btn-icon" onclick="toggleStaffPwd('staff-pwd-text', this)" title="Show/Hide Password" style="background:none; border:none; cursor:pointer; padding:2px 4px; color:var(--muted); display:inline-flex; align-items:center;">
+            <svg class="eye-icon" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          {% else %}
+          <small style="color:var(--muted); font-weight:normal;">(Not set plain)</small>
+          {% endif %}
+        </strong>
+      </div>
+      <div>
         <small>Phone Number</small>
         <strong>{{ profile_obj.user.phone|default:"—" }}</strong>
       </div>
@@ -92,4 +109,19 @@
   </section>
 
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function toggleStaffPwd(targetId, btn) {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const raw = el.getAttribute("data-password");
+    if (el.textContent === "••••••••") {
+      el.textContent = raw || "(Not set plain)";
+    } else {
+      el.textContent = "••••••••";
+    }
+  }
+</script>
 {% endblock %}

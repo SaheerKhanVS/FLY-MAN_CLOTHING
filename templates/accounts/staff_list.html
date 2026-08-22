@@ -52,7 +52,7 @@
                     {% if profile_obj.profile_photo %}
                         <img src="{{ profile_obj.profile_photo.url }}" alt="{{ profile_obj.user.full_name }}">
                     {% else %}
-                        <img src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default profile photo">
+                        <img src="{% static 'images/default-user.png' %}"  alt="Default profile photo">
                     {% endif %}
 
                     <div>

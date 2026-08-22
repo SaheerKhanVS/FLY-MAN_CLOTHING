@@ -133,10 +133,14 @@ class SystemSettingsForm(forms.ModelForm):
             "default_commission",
             "primary_color",
             "secondary_color",
+            "font_size",
+            "object_size",
         ]
         widgets = {
             "financial_year_start": forms.DateInput(attrs={"type": "date"}),
             "financial_year_end": forms.DateInput(attrs={"type": "date"}),
+            "font_size": forms.Select(attrs={"class": "size-select", "data-preview": "font-size"}),
+            "object_size": forms.Select(attrs={"class": "size-select", "data-preview": "object-size"}),
         }
 
     def __init__(self, *args, **kwargs):

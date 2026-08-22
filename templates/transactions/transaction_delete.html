@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Voucher #TXN-{{ transaction.pk|stringformat:"05d" }} · Flymen Clothing{% endblock %}
+{% block header_title %}Delete Transaction Voucher{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 520px;">
+  <div class="card" style="padding: 28px; border-top: 5px solid #ef4444;">
+    <h2 style="margin-top:0; color:#ef4444;">Delete Transaction Voucher?</h2>
+    <p style="color:var(--ink); font-size:14px; line-height:1.5;">
+      Are you sure you want to delete <strong>Transaction #TXN-{{ transaction.pk|stringformat:"05d" }}</strong> of <strong>₹{{ transaction.amount }}</strong>?
+    </p>
+    
+    <div style="background:var(--canvas); padding:14px; border-radius:10px; margin:16px 0; font-size:13px;">
+      <div><strong>Type:</strong> {{ transaction.get_transaction_type_display }}</div>
+      <div><strong>From:</strong> {{ transaction.from_party.name }}</div>
+      <div><strong>To:</strong> {{ transaction.to_party.name }}</div>
+      <div><strong>Date:</strong> {{ transaction.date_time|date:"d M Y, h:i A" }}</div>
+    </div>
+
+    <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 12px; font-size: 12px; color: #b91c1c; margin-bottom: 20px;">
+      ⚠️ Deleting this transaction will automatically reverse party balances (add ₹{{ transaction.amount }} back to <strong>{{ transaction.from_party.name }}</strong> and deduct ₹{{ transaction.amount }} from <strong>{{ transaction.to_party.name }}</strong>).
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <a href="{% url 'transaction_detail' transaction.pk %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

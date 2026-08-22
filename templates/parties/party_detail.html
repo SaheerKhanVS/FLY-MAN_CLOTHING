@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Party Details · {{ party.name }}{% endblock %}
+{% block header_title %}Party Details{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 960px;">
+  
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Parties & Contacts</p>
+      <h1>{{ party.name }}</h1>
+      <p><span class="badge badge-info">{{ party.party_type.name }}</span> {% if party.company_name %}· {{ party.company_name }}{% endif %}</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-outline" href="{% url 'party_list' %}">← Back to List</a>
+      <a class="btn btn-primary" href="{% url 'party_edit' party.pk %}">Edit Party</a>
+      <a class="btn btn-danger" href="{% url 'party_delete' party.pk %}">Delete</a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; background-color: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: var(--fg-primary);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="card" style="padding: 24px;">
+    <!-- Profile Summary -->
+    <div style="display:flex; align-items:center; gap:20px; padding-bottom: 20px; border-bottom: 1px solid var(--canvas); margin-bottom:24px;">
+      {% if party.profile_picture %}
+        <img src="{{ party.profile_picture.url }}" alt="{{ party.name }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-shrink:0;">
+      {% else %}
+        <div style="width:80px; height:80px; border-radius:50%; background-color: {{ party.avatar_bg_color }}; color: #ffffff; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.12); flex-shrink:0;">
+          {{ party.avatar_initial }}
+        </div>
+      {% endif %}
+
+      <div>
+        <h2 style="margin:0 0 4px 0; font-size:22px;">{{ party.name }}</h2>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="badge badge-info">{{ party.party_type.name }}</span>
+          {% if party.company_name %}
+            <span style="color:var(--muted); font-size:13px;">{{ party.company_name }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Grid -->
+    <div class="profile-detail-grid">
+      <div>
+        <small>Party Type</small>
+        <strong>{{ party.party_type.name }}</strong>
+      </div>
+      <div>
+        <small>Account Balance</small>
+        <strong style="color:{% if party.balance < 0 %}#ef4444{% elif party.balance > 0 %}#10b981{% else %}var(--fg-primary){% endif %};">
+          ₹{{ party.balance }}
+        </strong>
+      </div>
+      <div>
+        <small>Phone Number 1</small>
+        <strong>{{ party.phone_1|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Phone Number 2</small>
+        <strong>{{ party.phone_2|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>E-mail Address</small>
+        <strong>{{ party.email|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Party Company Name</small>
+        <strong>{{ party.company_name|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Party Owner Name</small>
+        <strong>{{ party.owner_name|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Pincode</small>
+        <strong>{{ party.pincode|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Locality</small>
+        <strong>{{ party.locality|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>District</small>
+        <strong>{{ party.district|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>State</small>
+        <strong>{{ party.state|default:"—" }}</strong>
+      </div>
+      <div>
+        <small>Created Date</small>
+        <strong>{{ party.created_at|date:"d M Y, H:i" }}</strong>
+      </div>
+    </div>
+
+    {% if party.manual_address %}
+      <div style="margin-top:20px; padding-top:16px; border-top:1px dashed #e2e8f0;">
+        <small style="color:var(--muted); display:block; margin-bottom:4px;">Manual Address</small>
+        <p style="margin:0; font-size:14px; white-space:pre-line;">{{ party.manual_address }}</p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

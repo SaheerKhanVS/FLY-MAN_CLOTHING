@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static media_tags %}
 
 {% block title %}Dashboard · Flymen{% endblock %}
 {% block header_title %}Dashboard{% endblock %}
@@ -29,9 +29,9 @@
   <!-- User Greeting Card -->
   <section class="card profile-summary" style="margin-bottom: 22px;">
     {% if current_profile.profile_photo %}
-      <img class="profile-avatar" src="{{ current_profile.profile_photo.url }}" alt="{{ request.user.full_name }}">
+      <img class="profile-avatar" src="{{ current_profile.profile_photo|optimized_url:'f_auto,q_auto,w_200,h_200,c_fill' }}" alt="{{ request.user.full_name }}" loading="lazy" decoding="async">
     {% else %}
-      <img class="profile-avatar" src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default user avatar">
+      <img class="profile-avatar" src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default user avatar" loading="lazy" decoding="async">
     {% endif %}
     <div>
       <h2 class="panel-title">Welcome back, {{ request.user.full_name }}</h2>

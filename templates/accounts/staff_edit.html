@@ -19,8 +19,21 @@
 
     <div class="form-grid">
       <div class="form-group">
-        <label>Username</label>
-        <input value="{{ profile_obj.user.username }}" disabled style="background: var(--canvas); cursor: not-allowed;">
+        <label>Username *</label>
+        {{ user_form.username }}
+        {{ user_form.username.errors }}
+      </div>
+
+      <div class="form-group">
+        <label>New Password</label>
+        <div style="position:relative;">
+          {{ user_form.password }}
+          <button type="button" onclick="toggleInputPwd('{{ user_form.password.id_for_label }}', this)" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted); padding:4px;">
+            <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        {{ user_form.password.errors }}
+        <small style="color:var(--muted); font-size:11px; display:block; margin-top:4px;">Leave blank to keep current password.</small>
       </div>
 
       <div class="form-group">
@@ -114,6 +127,16 @@
 
 {% block extra_js %}
 <script>
+  function toggleInputPwd(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    if (input.type === "password") {
+      input.type = "text";
+    } else {
+      input.type = "password";
+    }
+  }
+
   const photoInput = document.getElementById("{{ details_form.profile_photo.id_for_label }}") || document.querySelector('input[type="file"][name*="profile_photo"]');
   if (photoInput) {
     photoInput.addEventListener("change", function () {

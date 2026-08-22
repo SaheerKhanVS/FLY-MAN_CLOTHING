@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Party · {{ party.name }}{% endblock %}
+{% block header_title %}Delete Party{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 600px;">
+  <div class="card" style="padding: 32px; text-align: center;">
+    <div style="width:64px; height:64px; border-radius:50%; background:rgba(239,68,68,0.1); color:#ef4444; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto;">
+      <svg style="width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+    </div>
+
+    <h2>Delete Party Account?</h2>
+    <p style="color:var(--muted); margin-bottom:24px;">
+      Are you sure you want to delete <strong>{{ party.name }}</strong> ({{ party.party_type.name }})? This action cannot be undone.
+    </p>
+
+    <form method="post" style="display:flex; justify-content:center; gap:12px;">
+      {% csrf_token %}
+      <a class="btn btn-outline" href="{% url 'party_detail' party.pk %}">Cancel</a>
+      <button class="btn btn-danger" type="submit">Yes, Delete Party</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

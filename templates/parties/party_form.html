@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit Party · {{ party.name }}{% else %}Add New Party · Flymen Clothing{% endif %}{% endblock %}
+{% block header_title %}{% if is_edit %}Edit Party{% else %}Add New Party{% endif %}{% endblock %}
+
+{% block content %}
+<section class="page" style="max-width: 960px;">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Parties & Contacts</p>
+      <h1>{% if is_edit %}Edit Party: {{ party.name }}{% else %}Add New Party{% endif %}</h1>
+      <p>Enter party details. Party Name and Type are required. Pincode automatically populates locality, district, and state.</p>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; background-color: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: var(--fg-primary);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form class="card" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div style="background-color: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="form-grid">
+      <!-- Party Name (Required) -->
+      <div class="form-group">
+        <label for="{{ form.name.id_for_label }}">Party Name *</label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.name.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Party Type (Required + Dynamic Manage/Edit/Delete) -->
+      <div class="form-group">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label for="{{ form.party_type.id_for_label }}" style="margin:0;">Party Type *</label>
+          <button type="button" id="btn-open-type-modal" style="background:none; border:none; color:var(--primary); font-size:12px; font-weight:600; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:4px;">
+            <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Manage / Add Types
+          </button>
+        </div>
+        {{ form.party_type }}
+        {% if form.party_type.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.party_type.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- E-mail -->
+      <div class="form-group">
+        <label for="{{ form.email.id_for_label }}">E-mail</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.email.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Phone 1 -->
+      <div class="form-group">
+        <label for="{{ form.phone_1.id_for_label }}">Phone Number 1</label>
+        {{ form.phone_1 }}
+        {% if form.phone_1.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.phone_1.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Phone 2 -->
+      <div class="form-group">
+        <label for="{{ form.phone_2.id_for_label }}">Phone Number 2</label>
+        {{ form.phone_2 }}
+        {% if form.phone_2.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.phone_2.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Party Company Name -->
+      <div class="form-group">
+        <label for="{{ form.company_name.id_for_label }}">Party Company Name</label>
+        {{ form.company_name }}
+        {% if form.company_name.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.company_name.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Party Owner Name -->
+      <div class="form-group">
+        <label for="{{ form.owner_name.id_for_label }}">Party Owner Name</label>
+        {{ form.owner_name }}
+        {% if form.owner_name.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.owner_name.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Account Balance -->
+      <div class="form-group">
+        <label for="{{ form.balance.id_for_label }}">Account Balance (₹)</label>
+        {{ form.balance }}
+        {% if form.balance.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.balance.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Address Breakdown Header -->
+      <div class="field-full" style="margin-top: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--canvas);">
+        <strong style="font-size:14px; color:var(--primary);">Address & Location Details</strong>
+      </div>
+
+      <!-- Pincode (Auto-lookup trigger) -->
+      <div class="form-group">
+        <label for="{{ form.pincode.id_for_label }}">Pincode</label>
+        <div style="position:relative;">
+          {{ form.pincode }}
+          <span id="pincode-status" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--muted);"></span>
+        </div>
+        {% if form.pincode.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.pincode.errors.0 }}</div>
+        {% endif %}
+        <small style="color:var(--muted); font-size:11px;">Type a 6-digit Pincode to search localities.</small>
+      </div>
+
+      <!-- Searchable Locality Field -->
+      <div class="form-group">
+        <label for="id_locality">Locality</label>
+        <div style="position:relative;">
+          <input type="text" name="locality" id="id_locality" value="{{ form.locality.value|default:'' }}" placeholder="Type pincode or search locality..." autocomplete="off" style="width:100%;">
+          <div id="locality-search-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; max-height:220px; overflow-y:auto; background:#ffffff; border:1px solid #d4e2dc; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.14); z-index:999; margin-top:4px;"></div>
+        </div>
+        {% if form.locality.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.locality.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- District -->
+      <div class="form-group">
+        <label for="{{ form.district.id_for_label }}">District</label>
+        {{ form.district }}
+        {% if form.district.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.district.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- State -->
+      <div class="form-group">
+        <label for="{{ form.state.id_for_label }}">State</label>
+        {{ form.state }}
+        {% if form.state.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.state.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Manual Address -->
+      <div class="form-group field-full">
+        <label for="{{ form.manual_address.id_for_label }}">Manual Address</label>
+        {{ form.manual_address }}
+        {% if form.manual_address.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.manual_address.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Profile Picture -->
+      <div class="form-group form-full">
+        <label for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+          {% if party and party.profile_picture %}
+            <img id="party-photo-preview" src="{{ party.profile_picture.url }}" alt="{{ party.name }}" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,.08); flex:0 0 auto;">
+          {% else %}
+            <div id="party-avatar-initial-preview" style="width:72px; height:72px; border-radius:50%; background-color:#7c5cff; color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,.08); flex:0 0 auto;">
+              P
+            </div>
+            <img id="party-photo-preview" style="display:none; width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,.08); flex:0 0 auto;">
+          {% endif %}
+          <div>
+            <strong style="display:block; font-size:13px;">Avatar Preview</strong>
+            <small style="color:var(--muted); font-size:11px;">If no picture is selected, a vibrant initial-letter badge will be generated.</small>
+          </div>
+        </div>
+        {{ form.profile_picture }}
+        {% if form.profile_picture.errors %}
+          <div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.profile_picture.errors.0 }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-actions" style="margin-top: 20px;">
+      <a class="btn btn-outline" href="{% url 'party_list' %}">Cancel</a>
+      <button class="btn btn-primary" type="submit">{% if is_edit %}Save Changes{% else %}Create Party{% endif %}</button>
+    </div>
+  </form>
+</section>
+
+<!-- Manage Party Types Modal -->
+<div id="party-type-modal" class="modal-overlay" hidden style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:999; padding:16px;">
+  <div class="card" style="width:100%; max-width:500px; max-height:90vh; display:flex; flex-direction:column; padding:24px; overflow:hidden;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="margin:0;">Manage Party Types</h3>
+      <button type="button" id="btn-close-type-modal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted);">&times;</button>
+    </div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 16px 0;">Add, rename, or delete classification tags for your party accounts.</p>
+    
+    <!-- Add Row -->
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <input type="text" id="new-party-type-name" placeholder="Type new name (e.g. Wholesaler, Vendor)..." style="flex:1;">
+      <button type="button" class="btn btn-primary" id="btn-save-type-modal">Add Type</button>
+    </div>
+    <div id="party-type-modal-error" style="color:#ef4444; font-size:12px; margin-bottom:12px; display:none;"></div>
+
+    <!-- Types List -->
+    <div style="overflow-y:auto; flex:1; max-height:340px; border-top:1px solid var(--canvas); padding-top:12px;" id="party-types-list-container">
+      <div style="text-align:center; padding:16px; color:var(--muted);">Loading party types...</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const pincodeInput = document.getElementById("{{ form.pincode.id_for_label }}");
+    const localityInput = document.getElementById("id_locality");
+    const localityDropdown = document.getElementById("locality-search-dropdown");
+    const districtInput = document.getElementById("{{ form.district.id_for_label }}");
+    const stateInput = document.getElementById("{{ form.state.id_for_label }}");
+    const statusSpan = document.getElementById("pincode-status");
+    let pincodeCache = {};
+    let activeLocalities = [];
+
+    // Pincode Input Listener
+    if (pincodeInput) {
+      pincodeInput.addEventListener("input", function () {
+        const val = this.value.trim();
+        if (val.length === 6 && /^\d+$/.test(val)) {
+          if (pincodeCache[val]) {
+            handlePincodeResult(pincodeCache[val]);
+          } else {
+            statusSpan.textContent = "Searching localities...";
+            fetch(`/parties/api/pincode/${val}/`)
+              .then(res => res.json())
+              .then(data => {
+                statusSpan.textContent = "";
+                if (data.success) {
+                  pincodeCache[val] = data;
+                  handlePincodeResult(data);
+                } else {
+                  statusSpan.textContent = "No localities found";
+                  hideLocalityDropdown();
+                }
+              })
+              .catch(() => {
+                statusSpan.textContent = "Lookup failed";
+                hideLocalityDropdown();
+              });
+          }
+        } else {
+          statusSpan.textContent = "";
+          hideLocalityDropdown();
+        }
+      });
+    }
+
+    function handlePincodeResult(data) {
+      activeLocalities = data.localities || [];
+      if (data.district && districtInput) districtInput.value = data.district;
+      if (data.state && stateInput) stateInput.value = data.state;
+      renderLocalityDropdown(activeLocalities, data.district, data.state);
+    }
+
+    // Locality Input Realtime Filter
+    if (localityInput) {
+      localityInput.addEventListener("focus", function () {
+        if (activeLocalities.length > 0) {
+          renderLocalityDropdown(filterLocalities(this.value));
+        }
+      });
+
+      localityInput.addEventListener("input", function () {
+        if (activeLocalities.length > 0) {
+          renderLocalityDropdown(filterLocalities(this.value));
+        }
+      });
+    }
+
+    function filterLocalities(query) {
+      const q = (query || '').toLowerCase().trim();
+      if (!q) return activeLocalities;
+      return activeLocalities.filter(l => l.toLowerCase().includes(q));
+    }
+
+    function renderLocalityDropdown(localities) {
+      if (!localityDropdown) return;
+      if (!localities || localities.length === 0) {
+        localityDropdown.style.display = "none";
+        return;
+      }
+      localityDropdown.innerHTML = "";
+      localities.forEach(loc => {
+        const item = document.createElement("div");
+        item.style.padding = "10px 14px";
+        item.style.cursor = "pointer";
+        item.style.fontSize = "13px";
+        item.style.borderBottom = "1px solid rgba(0,0,0,0.04)";
+        item.textContent = loc;
+
+        item.addEventListener("mouseenter", () => item.style.backgroundColor = "rgba(0,0,0,0.04)");
+        item.addEventListener("mouseleave", () => item.style.backgroundColor = "transparent");
+        item.addEventListener("click", () => selectLocality(loc));
+
+        localityDropdown.appendChild(item);
+      });
+      localityDropdown.style.display = "block";
+    }
+
+    function selectLocality(localityName) {
+      if (localityInput) localityInput.value = localityName;
+      hideLocalityDropdown();
+    }
+
+    function hideLocalityDropdown() {
+      if (localityDropdown) localityDropdown.style.display = "none";
+    }
+
+    document.addEventListener("click", function (e) {
+      if (localityDropdown && localityInput && !localityInput.contains(e.target) && !localityDropdown.contains(e.target)) {
+        hideLocalityDropdown();
+      }
+    });
+
+    // Party Type Management Modal
+    const typeModal = document.getElementById("party-type-modal");
+    const openTypeModalBtn = document.getElementById("btn-open-type-modal");
+    const closeTypeModalBtn = document.getElementById("btn-close-type-modal");
+    const saveTypeModalBtn = document.getElementById("btn-save-type-modal");
+    const newTypeNameInput = document.getElementById("new-party-type-name");
+    const typeModalError = document.getElementById("party-type-modal-error");
+    const partyTypesListContainer = document.getElementById("party-types-list-container");
+    const partyTypeSelect = document.getElementById("{{ form.party_type.id_for_label }}");
+
+    if (openTypeModalBtn && typeModal) {
+      openTypeModalBtn.addEventListener("click", function () {
+        typeModal.style.display = "flex";
+        typeModal.removeAttribute("hidden");
+        newTypeNameInput.value = "";
+        typeModalError.style.display = "none";
+        loadPartyTypesList();
+      });
+    }
+
+    if (closeTypeModalBtn && typeModal) {
+      closeTypeModalBtn.addEventListener("click", function () {
+        typeModal.style.display = "none";
+      });
+    }
+
+    function loadPartyTypesList() {
+      if (!partyTypesListContainer) return;
+      partyTypesListContainer.innerHTML = '<div style="text-align:center; padding:16px; color:var(--muted);">Loading party types...</div>';
+
+      fetch("/parties/api/party-types/")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            renderTypesList(data.types);
+          } else {
+            partyTypesListContainer.innerHTML = '<div style="color:#ef4444; padding:12px;">Failed to load types.</div>';
+          }
+        })
+        .catch(() => {
+          partyTypesListContainer.innerHTML = '<div style="color:#ef4444; padding:12px;">Server error loading types.</div>';
+        });
+    }
+
+    function renderTypesList(types) {
+      if (!partyTypesListContainer) return;
+      if (!types || types.length === 0) {
+        partyTypesListContainer.innerHTML = '<div style="color:var(--muted); padding:12px; text-align:center;">No party types found.</div>';
+        return;
+      }
+      partyTypesListContainer.innerHTML = "";
+
+      types.forEach(pt => {
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.alignItems = "center";
+        row.style.justifySpaceBetween = "space-between";
+        row.style.padding = "8px 0";
+        row.style.borderBottom = "1px solid rgba(0,0,0,0.05)";
+        row.style.gap = "8px";
+
+        const labelSpan = document.createElement("div");
+        labelSpan.style.flex = "1";
+        labelSpan.style.fontSize = "13px";
+        labelSpan.style.fontWeight = "600";
+        labelSpan.innerHTML = `${pt.name} <small style="color:var(--muted); font-weight:normal;">(${pt.count} parties)</small>`;
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.style.display = "flex";
+        actionsDiv.style.gap = "6px";
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "btn btn-sm btn-outline";
+        editBtn.textContent = "Rename";
+        editBtn.addEventListener("click", () => startInlineEdit(row, pt));
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "btn btn-sm btn-danger";
+        delBtn.textContent = "Delete";
+        delBtn.addEventListener("click", () => deletePartyType(pt.id, pt.name));
+
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(delBtn);
+
+        row.appendChild(labelSpan);
+        row.appendChild(actionsDiv);
+        partyTypesListContainer.appendChild(row);
+      });
+    }
+
+    function startInlineEdit(row, pt) {
+      row.innerHTML = "";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = pt.name;
+      input.style.flex = "1";
+      input.style.minHeight = "32px";
+
+      const saveBtn = document.createElement("button");
+      saveBtn.type = "button";
+      saveBtn.className = "btn btn-sm btn-primary";
+      saveBtn.textContent = "Save";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.className = "btn btn-sm btn-outline";
+      cancelBtn.textContent = "Cancel";
+
+      cancelBtn.addEventListener("click", () => loadPartyTypesList());
+
+      saveBtn.addEventListener("click", () => {
+        const newName = input.value.trim();
+        if (!newName) return;
+        fetch(`/parties/api/party-type/${pt.id}/edit/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+          },
+          body: JSON.stringify({ name: newName })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              updateSelectOption(pt.id, data.name);
+              loadPartyTypesList();
+              if (window.showToast) window.showToast(`Party type renamed to '${data.name}'`);
+            } else {
+              typeModalError.textContent = data.message || "Failed to rename type.";
+              typeModalError.style.display = "block";
+            }
+          });
+      });
+
+      row.appendChild(input);
+      row.appendChild(saveBtn);
+      row.appendChild(cancelBtn);
+      input.focus();
+    }
+
+    function deletePartyType(id, name) {
+      if (!confirm(`Are you sure you want to delete party type '${name}'?`)) return;
+
+      fetch(`/parties/api/party-type/${id}/delete/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            removeSelectOption(id);
+            loadPartyTypesList();
+            if (window.showToast) window.showToast(`Party type '${name}' deleted.`);
+          } else {
+            typeModalError.textContent = data.message || "Cannot delete party type.";
+            typeModalError.style.display = "block";
+          }
+        });
+    }
+
+    if (saveTypeModalBtn) {
+      saveTypeModalBtn.addEventListener("click", function () {
+        const nameVal = newTypeNameInput.value.trim();
+        if (!nameVal) {
+          typeModalError.textContent = "Please enter a type name.";
+          typeModalError.style.display = "block";
+          return;
+        }
+
+        fetch("/parties/api/party-type/create/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+          },
+          body: JSON.stringify({ name: nameVal })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              addSelectOption(data.id, data.name, true);
+              newTypeNameInput.value = "";
+              loadPartyTypesList();
+              if (window.showToast) window.showToast(`Party type '${data.name}' added!`);
+            } else {
+              typeModalError.textContent = data.message || "Could not save type.";
+              typeModalError.style.display = "block";
+            }
+          });
+      });
+    }
+
+    function addSelectOption(id, name, selectIt) {
+      if (!partyTypeSelect) return;
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = name;
+      if (selectIt) opt.selected = true;
+      partyTypeSelect.appendChild(opt);
+    }
+
+    function updateSelectOption(id, newName) {
+      if (!partyTypeSelect) return;
+      for (let i = 0; i < partyTypeSelect.options.length; i++) {
+        if (partyTypeSelect.options[i].value == id) {
+          partyTypeSelect.options[i].textContent = newName;
+          break;
+        }
+      }
+    }
+
+    function removeSelectOption(id) {
+      if (!partyTypeSelect) return;
+      for (let i = 0; i < partyTypeSelect.options.length; i++) {
+        if (partyTypeSelect.options[i].value == id) {
+          partyTypeSelect.remove(i);
+          break;
+        }
+      }
+    }
+
+    // Photo Preview
+    const nameInput = document.getElementById("{{ form.name.id_for_label }}");
+    const initialPreview = document.getElementById("party-avatar-initial-preview");
+    const photoPreview = document.getElementById("party-photo-preview");
+    const photoInput = document.getElementById("{{ form.profile_picture.id_for_label }}");
+
+    if (nameInput && initialPreview) {
+      nameInput.addEventListener("input", function () {
+        const firstLetter = this.value.trim() ? this.value.trim()[0].toUpperCase() : "P";
+        initialPreview.textContent = firstLetter;
+      });
+    }
+
+    if (photoInput) {
+      photoInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file && photoPreview) {
+          photoPreview.src = URL.createObjectURL(file);
+          photoPreview.style.display = "block";
+          if (initialPreview) initialPreview.style.display = "none";
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

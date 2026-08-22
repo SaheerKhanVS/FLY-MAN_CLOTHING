@@ -56,6 +56,20 @@ class Color(models.Model):
 
 
 class SystemSettings(models.Model):
+    FONT_SIZE_CHOICES = [
+        ("small", "Small"),
+        ("medium", "Medium (Default)"),
+        ("large", "Large"),
+        ("xlarge", "Extra Large"),
+    ]
+
+    OBJECT_SIZE_CHOICES = [
+        ("small", "Small (Compact)"),
+        ("medium", "Medium (Default)"),
+        ("large", "Large"),
+        ("xlarge", "Extra Large"),
+    ]
+
     company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name="settings")
     currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
     financial_year_start = models.DateField()
@@ -64,6 +78,8 @@ class SystemSettings(models.Model):
     default_commission = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     primary_color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True, related_name="primary_settings")
     secondary_color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True, related_name="secondary_settings")
+    font_size = models.CharField(max_length=10, choices=FONT_SIZE_CHOICES, default="small")
+    object_size = models.CharField(max_length=10, choices=OBJECT_SIZE_CHOICES, default="small")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -73,3 +89,88 @@ class SystemSettings(models.Model):
 
     def __str__(self):
         return f"{self.company.company_name} Settings"
+
+
+class ActionHistory(models.Model):
+    ACTION_TYPE_CHOICES = [
+        ("CREATE", "Create"),
+        ("UPDATE", "Update"),
+        ("DELETE", "Delete"),
+        ("LOGIN", "Login"),
+        ("LOGOUT", "Logout"),
+        ("SYSTEM", "System"),
+        ("CLEAR", "Clear"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="action_histories"
+    )
+    user_name = models.CharField(max_length=255, blank=True)
+    action = models.CharField(max_length=255)
+    details = models.TextField(blank=True, null=True)
+    action_type = models.CharField(max_length=50, choices=ACTION_TYPE_CHOICES, default="SYSTEM", db_index=True)
+    ip_address = models.CharField(max_length=45, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = "Action History"
+        verbose_name_plural = "Action Histories"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["-created_at"]),
+            models.Index(fields=["action_type"]),
+        ]
+
+
+    def __str__(self):
+        return f"[{self.get_action_type_display()}] {self.action} by {self.user_name or 'System'} at {self.created_at}"
+
+    @classmethod
+    def trim_old_records(cls):
+        """
+        Auto-delete oldest 10 records if total count exceeds 100.
+        """
+        count = cls.objects.count()
+        if count > 100:
+            oldest_ids = list(cls.objects.order_by("created_at").values_list("id", flat=True)[:10])
+            if oldest_ids:
+                cls.objects.filter(id__in=oldest_ids).delete()
+
+
+class TrashItem(models.Model):
+    ITEM_TYPE_CHOICES = [
+        ("PARTY", "Party"),
+        ("TRANSACTION", "Transaction"),
+        ("STAFF", "Staff Member"),
+    ]
+
+    item_type = models.CharField(max_length=50, choices=ITEM_TYPE_CHOICES, db_index=True)
+    title = models.CharField(max_length=255)
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="deleted_trash_items"
+    )
+    deleted_by_name = models.CharField(max_length=255, blank=True)
+    serialized_data = models.JSONField()
+    deleted_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = "Trash Item"
+        verbose_name_plural = "Trash Items"
+        ordering = ["-deleted_at"]
+        indexes = [
+            models.Index(fields=["-deleted_at"]),
+            models.Index(fields=["item_type"]),
+        ]
+
+    def __str__(self):
+        return f"[{self.get_item_type_display()}] {self.title} (Deleted at {self.deleted_at})"
+
+

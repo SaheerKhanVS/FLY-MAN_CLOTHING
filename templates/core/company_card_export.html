@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{{ company.company_name }} - Official Business Card Specifications</title>
+<style>
+@page {
+    size: A4 portrait;
+    margin: 8mm;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #0f172a;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+}
+
+.spec-sheet {
+    width: 100%;
+    background: #ffffff;
+    box-sizing: border-box;
+    padding: 10px 14px;
+}
+
+/* Header Banner */
+.spec-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    border-bottom: 2px solid {{ primary_color_hex|default:'#1e3a8a' }};
+    margin-bottom: 16px;
+}
+
+.spec-subtitle {
+    text-align: center;
+    font-size: 10px;
+    color: #64748b;
+    margin-top: -12px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+/* Card Outer Wrapper */
+.cards-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+/* FRONT CARD */
+.card-front {
+    width: 310px;
+    height: 180px;
+    background: linear-gradient(135deg, {{ primary_color_hex|default:'#1e3a8a' }} 0%, {{ primary_color_hex|default:'#1e40af' }} 100%);
+    border-radius: 12px;
+    margin: 0 auto;
+    position: relative;
+    color: #ffffff;
+    box-sizing: border-box;
+    padding: 20px 24px;
+    border: 1px solid {{ primary_color_hex|default:'#1e3a8a' }};
+}
+
+.card-front-content {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.card-front-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0;
+    color: #ffffff;
+}
+
+.card-front-subtitle {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+.card-front-divider {
+    width: 50px;
+    height: 2px;
+    background: {{ secondary_color_hex|default:'#60a5fa' }};
+    margin: 10px auto 0 auto;
+}
+
+.card-front-footer {
+    position: absolute;
+    bottom: 14px;
+    left: 24px;
+    right: 24px;
+    border-top: 1px solid rgba(255,255,255,0.25);
+    padding-top: 6px;
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #ffffff;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+/* BACK CARD */
+.card-back {
+    width: 310px;
+    height: 180px;
+    background: #ffffff;
+    border-radius: 12px;
+    margin: 0 auto;
+    position: relative;
+    color: #0f172a;
+    box-sizing: border-box;
+    padding: 16px 20px;
+    border: 1.5px solid #cbd5e1;
+}
+
+.card-back-accent-bar {
+    position: absolute;
+    top: 16px;
+    left: 12px;
+    width: 4px;
+    height: 30px;
+    background: {{ primary_color_hex|default:'#1e40af' }};
+    border-radius: 2px;
+}
+
+.card-back-header {
+    margin-left: 8px;
+}
+
+.card-back-name {
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #0f172a;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.card-back-title {
+    font-size: 8px;
+    font-weight: 700;
+    color: {{ primary_color_hex|default:'#2563eb' }};
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.card-back-title-line {
+    width: 130px;
+    height: 1px;
+    background: #cbd5e1;
+    margin-top: 4px;
+}
+
+.card-back-qr {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 2px;
+    background: #ffffff;
+}
+
+.card-back-qr img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.card-back-contacts {
+    margin-top: 14px;
+    margin-left: 8px;
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+.contact-item {
+    margin-bottom: 4px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.contact-label {
+    display: inline-block;
+    width: 16px;
+    color: {{ primary_color_hex|default:'#1e40af' }};
+    font-weight: 700;
+}
+
+.card-back-footer {
+    position: absolute;
+    bottom: 10px;
+    right: 16px;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: {{ primary_color_hex|default:'#1e40af' }};
+}
+
+/* Technical Specification Details Box */
+.spec-details-table {
+    width: 100%;
+    margin-top: 16px;
+    border-collapse: collapse;
+    font-size: 9px;
+    border: 1px solid #cbd5e1;
+}
+
+.spec-details-table th {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 6px 8px;
+    text-align: left;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spec-details-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+}
+
+.spec-details-table td:last-child {
+    border-right: none;
+}
+
+.spec-details-table tr:nth-child(even) {
+    background: #f8fafc;
+}
+</style>
+</head>
+<body>
+
+<div class="spec-sheet">
+    <div class="spec-title">STANDARD BUSINESS CARD SPECIFICATIONS - ATM SIZE (CR80)</div>
+    <div class="spec-subtitle">Official Executive Company Mockup & Digital Identity Blueprint</div>
+
+    <!-- MAIN COMPARISON TABLE FOR FRONT & BACK CARDS -->
+    <table class="cards-table">
+        <tr>
+            <!-- LEFT COLUMN: FRONT CARD MOCKUP -->
+            <td style="width: 50%; vertical-align: top; padding-right: 10px; text-align: center;">
+                <div style="font-size: 9.5px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">
+                    CR80 Front Side (85.60 mm × 53.98 mm)
+                </div>
+                
+                <div class="card-front">
+                    <div class="card-front-content">
+                        {% if company.logo %}
+                            <img src="{{ company.logo.url }}" style="height: 36px; width: auto; object-fit: contain; margin-bottom: 4px;" alt="Logo">
+                        {% else %}
+                            <div style="font-size: 24px; font-weight: 900; color: #ffffff; letter-spacing: 2px; margin-bottom: 4px;">FLYMEN</div>
+                        {% endif %}
+                        <div class="card-front-title">{{ company.company_name }}</div>
+                        <div class="card-front-subtitle">Premium Apparel & Clothing Management</div>
+                        <div class="card-front-divider"></div>
+                    </div>
+
+                    <div class="card-front-footer">
+                        www.flyman.com
+                    </div>
+                </div>
+                
+                <div style="font-size: 8px; color: #64748b; margin-top: 6px;">
+                    Corner Radius: R 3.18 mm (0.125 in) · Thickness: 0.76 mm (0.03 in)
+                </div>
+            </td>
+
+            <!-- RIGHT COLUMN: BACK CARD MOCKUP -->
+            <td style="width: 50%; vertical-align: top; padding-left: 10px; text-align: center;">
+                <div style="font-size: 9.5px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">
+                    CR80 Back Side (85.60 mm × 53.98 mm)
+                </div>
+
+                <div class="card-back">
+                    <div class="card-back-accent-bar"></div>
+                    
+                    <div class="card-back-header">
+                        <div style="text-align: left;">
+                            <div class="card-back-name">{% if company.owner %}{{ company.owner.full_name }}{% else %}SAHEER KHAN{% endif %}</div>
+                            <div class="card-back-title">OWNER & DIRECTOR</div>
+                            <div class="card-back-title-line"></div>
+                        </div>
+
+                        {% if qr_code_base64 %}
+                            <div class="card-back-qr">
+                                <img src="{{ qr_code_base64 }}" alt="QR Code">
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-back-contacts" style="text-align: left;">
+                        <div class="contact-item">
+                            <span class="contact-label">📞</span>
+                            <span>{% if company.owner and company.owner.phone %}{{ company.owner.phone }}{% else %}{{ company.phone }}{% endif %}</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">✉</span>
+                            <span>{% if company.owner and company.owner.email %}{{ company.owner.email }}{% else %}{{ company.email }}{% endif %}</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">🌐</span>
+                            <span>www.flyman.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">📍</span>
+                            <span>{{ company.address }}, {{ company.city }}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-back-footer">
+                        www.flyman.com
+                    </div>
+                </div>
+
+                <div style="font-size: 8px; color: #64748b; margin-top: 6px;">
+                    Position Margins: 10 mm from edges · CR80 ATM Standard Size
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- BLUEPRINT DIMENSIONS & SPECIFICATION SUMMARY -->
+    <table class="spec-details-table">
+        <thead>
+            <tr>
+                <th>Specification Parameter</th>
+                <th>Standard Metric Value</th>
+                <th>Standard Imperial Value</th>
+                <th>Design Application</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>CR80 Standard (ATM size)</strong></td>
+                <td>85.60 mm × 53.98 mm</td>
+                <td>3.370 in × 2.125 in</td>
+                <td>Executive PVC / Heavy Card Stock</td>
+            </tr>
+            <tr>
+                <td><strong>Corner Radius</strong></td>
+                <td>R 3.18 mm</td>
+                <td>0.125 in</td>
+                <td>Precision Rounded Safety Edge</td>
+            </tr>
+            <tr>
+                <td><strong>Card Thickness</strong></td>
+                <td>0.76 mm</td>
+                <td>0.030 in</td>
+                <td>Standard Premium Plastic/Paper Gauge</td>
+            </tr>
+            <tr>
+                <td><strong>Company Web Portal</strong></td>
+                <td>www.flyman.com</td>
+                <td>www.flyman.com</td>
+                <td>Official Domain Linkage</td>
+            </tr>
+            <tr>
+                <td><strong>Executive Owner Contact</strong></td>
+                <td>{% if company.owner %}{{ company.owner.full_name }}{% else %}SAHEER KHAN{% endif %}</td>
+                <td>{% if company.owner and company.owner.phone %}{{ company.owner.phone }}{% else %}{{ company.phone }}{% endif %}</td>
+                <td>Live Owner Identity Linkage</td>
+            </tr>
+            <tr>
+                <td><strong>Official Email</strong></td>
+                <td>{% if company.owner and company.owner.email %}{{ company.owner.email }}{% else %}{{ company.email }}{% endif %}</td>
+                <td>info@flyman.com</td>
+                <td>Official Corporate Communications</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 14px; text-align: center; font-size: 8px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 6px;">
+        Generated by Flymen Clothing ERP System · Official Business Card Technical Specifications Blueprint · www.flyman.com
+    </div>
+</div>
+
+</body>
+</html>

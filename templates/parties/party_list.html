@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static media_tags %}
+
+{% block title %}Parties Directory · Flymen Clothing{% endblock %}
+{% block header_title %}Parties Directory{% endblock %}
+
+{% block content %}
+<section class="page">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Parties & Contacts</p>
+      <h1>Parties Directory</h1>
+      <p>Manage your customers, suppliers, staff, and associated company parties.</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-primary" href="{% url 'party_create' %}">
+        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add New Party
+      </a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; background-color: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: var(--fg-primary);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Filter & Search Toolbar -->
+  <div class="card" style="padding: 16px; margin-bottom: 24px;">
+    <form method="get" action="{% url 'party_list' %}" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+      <div style="display:flex; flex:1; min-width:260px; gap:8px;">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search by name, phone, company, owner, email..." style="width:100%;">
+        <button class="btn" type="submit">Search</button>
+        {% if query or selected_type_id %}
+          <a class="btn btn-outline" href="{% url 'party_list' %}">Reset</a>
+        {% endif %}
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:13px; font-weight:600; color:var(--muted);">Filter Type:</span>
+        <a href="{% url 'party_list' %}{% if query %}?q={{ query }}{% endif %}" class="btn btn-sm {% if not selected_type_id %}btn-primary{% else %}btn-outline{% endif %}">All</a>
+        {% for pt in party_types %}
+          <a href="{% url 'party_list' %}?type={{ pt.id }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if selected_type_id == pt.id|stringformat:'s' %}btn-primary{% else %}btn-outline{% endif %}">
+            {{ pt.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Parties Data Table -->
+  {% if page_obj %}
+    <div class="data-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Party Name</th>
+            <th>Type</th>
+            <th>Contact Details</th>
+            <th>Company & Owner</th>
+            <th>Location</th>
+            <th style="text-align:right;">Balance</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for party in page_obj %}
+            <tr>
+              <td>
+                <div class="table-party-cell">
+                  {% if party.profile_picture %}
+                    <img class="table-avatar-img" src="{{ party.profile_picture|optimized_url:'f_auto,q_auto,w_100,h_100,c_fill' }}" alt="{{ party.name }}" loading="lazy" decoding="async">
+                  {% else %}
+                    <div class="table-avatar-badge" style="background-color: {{ party.avatar_bg_color }};">
+                      {{ party.avatar_initial }}
+                    </div>
+                  {% endif %}
+                  <div>
+                    <a href="{% url 'party_detail' party.pk %}" style="font-weight:700; color:var(--ink); font-size:14px;">
+                      {{ party.name }}
+                    </a>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="badge badge-info">{{ party.party_type.name }}</span>
+              </td>
+
+              <td>
+                {% if party.phone_1 %}
+                  <div style="font-weight:600; font-size:13px;">{{ party.phone_1 }}{% if party.phone_2 %} <small style="color:var(--muted);">/ {{ party.phone_2 }}</small>{% endif %}</div>
+                {% endif %}
+                {% if party.email %}
+                  <div style="color:var(--muted); font-size:12px;">{{ party.email }}</div>
+                {% endif %}
+                {% if not party.phone_1 and not party.email %}
+                  <span style="color:var(--muted); font-size:12px;">—</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if party.company_name %}
+                  <div style="font-weight:600; font-size:13px;">{{ party.company_name }}</div>
+                  {% if party.owner_name %}<div style="color:var(--muted); font-size:12px;">Owner: {{ party.owner_name }}</div>{% endif %}
+                {% else %}
+                  <span style="color:var(--muted); font-size:12px;">—</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if party.locality or party.district or party.state %}
+                  <div style="font-size:13px;">{% if party.locality %}{{ party.locality }}, {% endif %}{% if party.district %}{{ party.district }}, {% endif %}{{ party.state }}</div>
+                  {% if party.pincode %}<div style="color:var(--muted); font-size:11px;">PIN: {{ party.pincode }}</div>{% endif %}
+                {% else %}
+                  <span style="color:var(--muted); font-size:12px;">—</span>
+                {% endif %}
+              </td>
+
+              <td style="text-align:right; font-weight:700; font-size:14px; color:{% if party.balance < 0 %}#ef4444{% elif party.balance > 0 %}#10b981{% else %}var(--ink){% endif %};">
+                ₹{{ party.balance }}
+              </td>
+
+              <td style="text-align:right;">
+                <div style="display:inline-flex; gap:6px; justify-content:flex-end;">
+                  <a href="{% url 'party_detail' party.pk %}" class="btn btn-sm btn-outline" title="View Profile">Details</a>
+                  <a href="{% url 'party_edit' party.pk %}" class="btn btn-sm btn-outline" title="Edit Party">Edit</a>
+                  <a href="{% url 'party_delete' party.pk %}" class="btn btn-sm btn-danger" title="Delete Party">Delete</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div style="margin-top: 24px; display:flex; justify-content:center; gap:8px;">
+        {% if page_obj.has_previous %}
+          <a class="btn btn-outline" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_type_id %}&type={{ selected_type_id }}{% endif %}">Previous</a>
+        {% endif %}
+        <span class="btn btn-disabled" style="cursor:default;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="btn btn-outline" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_type_id %}&type={{ selected_type_id }}{% endif %}">Next</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="card" style="text-align:center; padding: 48px 20px;">
+      <svg style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.5;margin-bottom:12px;" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <h3>No Parties Found</h3>
+      <p style="color:var(--muted); margin-bottom:16px;">Get started by adding a new customer, supplier, or partner account.</p>
+      <a href="{% url 'party_create' %}" class="btn btn-primary">Add New Party</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

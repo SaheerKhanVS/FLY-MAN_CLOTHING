@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Company Profile · Flymen{% endblock %}
 {% block header_title %}Company Profile{% endblock %}
@@ -12,6 +13,10 @@
       <p>Manage your business identity, owner details, address, tax GST info, and default financial settings.</p>
     </div>
     <div class="page-actions">
+      <a href="{% url 'company_card_pdf' %}" class="btn btn-outline" target="_blank" title="Export Business Card Blueprint PDF">
+        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h4"/><path d="M6 12h8"/><path d="M6 16h12"/></svg>
+        Export Business Card PDF
+      </a>
       <a href="{% url 'company_export_pdf' %}" class="btn btn-outline" target="_blank">
         <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Export PDF Profile
@@ -28,8 +33,8 @@
     <section class="card">
       <div class="panel-head">
         <div>
-          <h2 class="panel-title">Business & Owner Details</h2>
-          <p class="panel-subtitle">Official company credentials and owner account linkage.</p>
+          <h2 class="panel-title">Business & Organization Details</h2>
+          <p class="panel-subtitle">Official company credentials and registration information.</p>
         </div>
       </div>
       
@@ -39,29 +44,8 @@
       
       <div class="info-row">
         <span class="info-label">Company Name</span>
-        <span class="info-value">{{ company.company_name }}</span>
+        <span class="info-value"><strong>{{ company.company_name }}</strong></span>
       </div>
-      <div class="info-row">
-        <span class="info-label">Company Owner</span>
-        <span class="info-value">
-          {% if company.owner %}
-            <strong>{{ company.owner.full_name }}</strong>
-            <span class="badge badge-success" style="margin-left: 6px;">{{ company.owner.get_user_type_display }}</span>
-          {% else %}
-            <span class="badge badge-warning">Unassigned</span>
-          {% endif %}
-        </span>
-      </div>
-      {% if company.owner %}
-      <div class="info-row">
-        <span class="info-label">Owner Username</span>
-        <span class="info-value">@{{ company.owner.username }}</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Owner Contact Phone</span>
-        <span class="info-value">{{ company.owner.phone }}</span>
-      </div>
-      {% endif %}
       <div class="info-row">
         <span class="info-label">Company Phone</span>
         <span class="info-value">{{ company.phone }}</span>
@@ -84,6 +68,72 @@
           {% endif %}
         </span>
       </div>
+    </section>
+
+    <!-- Owner User Details (Dynamically Linked) -->
+    <section class="card">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Linked Owner Account Details</h2>
+          <p class="panel-subtitle">Live user profile details dynamically linked to company ownership.</p>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="{% url 'profile' %}">
+          <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Owner Profile
+        </a>
+      </div>
+
+      {% if company.owner %}
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+          {% if company.owner.staff_profile.profile_photo %}
+            <img src="{{ company.owner.staff_profile.profile_photo.url }}" alt="{{ company.owner.full_name }}" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,.08); flex: 0 0 auto;">
+          {% else %}
+            <img src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default owner profile" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--canvas); box-shadow: 0 4px 12px rgba(0,0,0,.08); flex: 0 0 auto;">
+          {% endif %}
+          <div>
+            <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--fg-primary);">{{ company.owner.full_name }}</h3>
+            <p style="margin: 2px 0 0 0; color: var(--fg-muted); font-size: 13px;">
+              <span class="badge badge-success">{{ company.owner.get_user_type_display }}</span>
+              <span style="margin-left: 6px;">@{{ company.owner.username }}</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Full Name</span>
+          <span class="info-value"><strong>{{ company.owner.full_name }}</strong></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">First Name</span>
+          <span class="info-value">{{ company.owner.first_name|default:"—" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Last Name</span>
+          <span class="info-value">{{ company.owner.last_name|default:"—" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Username</span>
+          <span class="info-value">@{{ company.owner.username }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Owner Phone</span>
+          <span class="info-value"><strong>{{ company.owner.phone|default:"—" }}</strong></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Owner Email</span>
+          <span class="info-value">{{ company.owner.email|default:"—" }}</span>
+        </div>
+        {% if company.owner.staff_profile.staff_code %}
+        <div class="info-row">
+          <span class="info-label">Owner Staff Code</span>
+          <span class="info-value"><code>{{ company.owner.staff_profile.staff_code }}</code></span>
+        </div>
+        {% endif %}
+      {% else %}
+        <div class="empty-state">
+          <p>No owner account assigned to this company.</p>
+        </div>
+      {% endif %}
     </section>
 
     <!-- Workspace Configuration -->

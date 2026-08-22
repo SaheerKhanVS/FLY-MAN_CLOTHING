@@ -1,12 +1,12 @@
-{% load static %}
+{% load static media_tags %}
 <div class="staff-grid">
     {% for profile_obj in page_obj %}
     <div class="staff-card">
         <div class="staff-card-top">
             {% if profile_obj.profile_photo %}
-                <img src="{{ profile_obj.profile_photo.url }}" alt="{{ profile_obj.user.full_name }}">
+                <img src="{{ profile_obj.profile_photo|optimized_url:'f_auto,q_auto,w_200,h_200,c_fill' }}" alt="{{ profile_obj.user.full_name }}" loading="lazy" decoding="async">
             {% else %}
-                <img src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default profile photo">
+                <img src="{% static 'images/default-user.png' %}" onerror="this.src='{% static 'images/icon.PNG' %}'" alt="Default profile photo" loading="lazy" decoding="async">
             {% endif %}
             <div>
                 <h3>{{ profile_obj.user.full_name }}</h3>
